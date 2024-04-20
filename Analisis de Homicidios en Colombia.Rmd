@@ -1,7 +1,7 @@
 ---
-title: "Analisis de Homicidios en Colombia"
-author: "Jesus Gallardo"
-date: "`r Sys.Date()`"
+title: " **Análisis de Series de Tiempo de Homicidios en colombia** "
+author: " *Andrés Barrios | Jesus Gallardo* "
+date: " *`r Sys.Date()`*"
 output: html_document
 ---
 
@@ -9,22 +9,19 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+```{r, echo=FALSE, out.width="36%",out.height=="20%", fig.align = "center",warning=FALSE}
+knitr::include_graphics("C:/Users/W10/OneDrive/Escritorio/Maestria/Series de Tiempo/Actividad 1/Imagen Analisis Homicidios.jpg")
 
-```{r cars}
-summary(cars)
 ```
 
-## Including Plots
+## **Chapter 1 Descripción**
 
-You can also embed plots, for example:
+La dinámica y evolución de los homicidios en Colombia constituye un fenómeno de gran relevancia que merece ser minuciosamente analizado y comprendido. Pues, el entendimiento de sus tendencias, patrones y factores resulta esencial para abordar la complejidad de este delito en el país. En este sentido, este análisis podría arrojar luz a aspectos cruciales como la variación estacional de los homicidios, los potenciales impactos de factores socioeconómicos y demográficos y/o la influencia de las políticas de seguridad implementadas en el territorio nacional.
 
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
+La base de datos proporcionada tiene un espacio temporal que data desde el 2010 hasta enero de 2024.
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+**Fuente**: Dirección de Investigación Criminal e Interpol (DIJIN) - Policía Nacional de Colombia.
+
+GOV.CO_DatosAbiertos
