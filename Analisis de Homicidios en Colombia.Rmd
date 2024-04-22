@@ -1,6 +1,6 @@
 ---
 title: " **Análisis de Series de Tiempo de Homicidios en colombia** "
-author: " *Andrés Barrios | Jesus Gallardo* "
+author: " *Andrés Barrios | Jesus Gallardo | Luis Tafur* "
 date: " *`r Sys.Date()`*"
 output: html_document
 ---
