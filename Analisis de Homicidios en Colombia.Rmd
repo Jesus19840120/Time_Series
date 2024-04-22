@@ -17,11 +17,12 @@ knitr::include_graphics("C:/Users/W10/OneDrive/Escritorio/Maestria/Series de Tie
 ```
 
 ## **Chapter 1 Descripción**
-
+<div style= "text-align:justify">
 La dinámica y evolución de los homicidios en Colombia constituye un fenómeno de gran relevancia que merece ser minuciosamente analizado y comprendido. Pues, el entendimiento de sus tendencias, patrones y factores resulta esencial para abordar la complejidad de este delito en el país. En este sentido, este análisis podría arrojar luz a aspectos cruciales como la variación estacional de los homicidios, los potenciales impactos de factores socioeconómicos y demográficos y/o la influencia de las políticas de seguridad implementadas en el territorio nacional.
+<div/>
 
-La base de datos proporcionada tiene un espacio temporal que data desde el 2010 hasta enero de 2024.
+La base de datos proporcionada tiene un espacio temporal que data desde el **2010** hasta enero de **2024**.
 
-**Fuente**: Dirección de Investigación Criminal e Interpol (DIJIN) - Policía Nacional de Colombia.
+**Fuente**: Dirección de Investigación Criminal e Interpol **(DIJIN) - Policía Nacional de Colombia**.
 
 [GOV.CO_DatosAbiertos](https://www.datos.gov.co/Seguridad-y-Defensa/Homicidios-accidente-de-tr-nsito-Polic-a-Nacional/ha6j-pa2r/about_data)
