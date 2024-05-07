@@ -237,3 +237,44 @@ autoplot(fit_df, color = "aquamarine3") +
 
 ```
 Acorde a la tendencia el comportamiento de los homicidios es lineal durante los años 2010 y 2020. Posteriormente, se vuelve creciente hasta finales del 2023.
+
+### - *Estacionalidad*
+```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
+ggseasonplot(df_ts)+
+  theme_minimal()+
+  labs(x = "Mes", title = "Estacionalidad de los homicidios por mes")
+```
+
+Se evidencins picos en la mayoría de los años, principalmente en los meses de febrero, abril, junio y octubre, a excepción de 2023; mientras que los meses donde menos homicidios se presentan es mayo, septiembre y noviembre.
+
+### - *Eliminación de tendencia*
+
+Dado a que la teoria de las series de tiempo precinde de la eliminación de la tendencia y la estacionalidad, para una mejor modelización y capacidad predictiva se procede a eliminar dichos componentes.
+```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
+x = log(df_ts)
+e_tendencia = diff(x)
+```
+
+
+### - *Grafica de Serie de Tiempo Sin Tendencia*
+```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
+plot(e_tendencia, 
+     xlab = "Años", ylab = "Número de homicidios",
+     main = "TS Homicidios en Colombia (2010 - 2024) \nSin Tendencia",
+     col = "blue", type = "l", lwd = 2)
+grid()
+
+# Ajustar el tamaño de la fuente
+par(cex.lab=1.2, cex.main=1.4, cex.axis=1.2)
+```
+
+### - *Eliminación de la estacionalidad*
+```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
+e_t_estacionalidad = diff(e_tendencia, lag=12)
+plot(e_t_estacionalidad, xlab = "Años", ylab = "Número de homicidios",
+     main = "TS Homicidios en Colombia (2010 - 2024) \nSin Tendencia y Estacionalidad",
+     col = "blue", type = "l", lwd = 2)
+grid()
+```
+
+
