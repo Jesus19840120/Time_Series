@@ -26,3 +26,214 @@ La base de datos proporcionada tiene un espacio temporal que data desde el **201
 **Fuente**: Dirección de Investigación Criminal e Interpol **(DIJIN) - Policía Nacional de Colombia**.
 
 [GOV.CO_DatosAbiertos](https://www.datos.gov.co/Seguridad-y-Defensa/Homicidios-accidente-de-tr-nsito-Polic-a-Nacional/ha6j-pa2r/about_data)
+
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+library(tidyverse) #Manipulación de data_set y gráficos ggplot
+library(fpp2)
+library(ggfortify)
+library(forecast)
+library(TTR)
+library(lubridate)
+library(plotly)
+library(mice)
+library(VIM)
+library(htmlwidgets)
+library(htmltools)
+```
+
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+#Cargue de data_set
+data <- read_csv("C:/Users/W10/OneDrive/Escritorio/Maestria/Series de Tiempo/Actividad 2/Unidad 2 y 3/Serie_de_tiempo_avance_dia3/Serie_de_tiempo/Homicidios.csv")
+```
+
+
+## Análisis exploratorio
+
+### *Dimensiones*
+
+Se realiza la exploracion de las dimensiones de la base de datos evidenciando que esta cuenta con:
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+#Dimensión
+dimensiones=dim(data)
+```
+**Filas:** `r dimensiones[1]` **Columnas:** `r dimensiones[2]`
+
+### *Tipo de variables*
+
+Se debe corrigir el tipo de las columnas **FECHA HECHO** y **CANTIDAD**, dado a que éstas son de tipo **Date** y **Número**, luego de aplicar los cambios se observa:
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+
+#Tipo de variables
+data$`FECHA HECHO` <- as.Date(data$`FECHA HECHO`, format = "%d/%m/%Y")
+data$CANTIDAD <- as.numeric(data$CANTIDAD)
+Clase_Cant=class(data$CANTIDAD)
+Clase_Fecha=class(data$`FECHA HECHO`)
+```
+- **CANTIDAD:** La variable es tipo `r Clase_Cant`
+- **FECHA HECHO:** La variable es tipo `r Clase_Fecha`
+
+### *Identificación de registros vacíos*
+Se realiza la verificacion de valores nulos o vacios obteniendo los siguientes resultados:
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+#Identificación de registros vacíos
+as.table( apply(data, 2, function(x) sum(is.na(x))))
+```
+Clara mente se observa que no existen valos nulos o vacios en ninguna de las variables.
+
+
+### *Identificación de registros vacíos*
+Se realiza la verificacion de valores nulos o vacios obteniendo los siguientes resultados:
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+par(mfrow=c(3,2))
+md.pattern(data, rotate.names=TRUE)
+```
+
+Clara mente se observa que no existen valores nulos o vacios en ninguna de las variables.
+
+### - *Resumen de Estadisticos*
+
+A continuacion se muestra un resumen de los estadisticos basicos de nuestra variable **CANTIDAD**:
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+#Estadísticas básicas
+summary(data$CANTIDAD)
+```
+
+
+### - *Transformación del dataset*
+A continuacion presentamos un resumen de los estadisticos de los homicidios totales de la serie de tiempo luego de realizar la transformacion de los datos:
+ 
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+df <- data %>% select(`FECHA HECHO`, CANTIDAD) %>% 
+  group_by(`FECHA HECHO`) %>% 
+  summarise(HOMICIDIOS = sum(CANTIDAD)) %>% 
+  rename(FECHA = `FECHA HECHO`) %>% 
+  transmute(FECHA, HOMICIDIOS) %>% 
+  mutate(Año = year(FECHA),
+         Mes = month(FECHA),
+         AM = paste0(Año, Mes)) %>% 
+  select(AM, HOMICIDIOS) %>% 
+  group_by(AM) %>% 
+  summarise(Homicidios = sum(HOMICIDIOS))
+
+df_ts <- ts(df$Homicidios, frequency = 12, start = 2010)
+
+Inicio_TS=start(df_ts)
+
+Fin_TS=end(df_ts)
+
+Clase_TS=class(df_ts)
+
+#Estadística Básica a la posterior transformación
+Resumen_df_ts= df_ts
+
+summary(Resumen_df_ts)
+```
+Dado a que es una serie de tiempo solo tendremos en cuenta la construcción de una base que contenga las variables **FECHA HECHO** y **CANTIDAD** para el analisis a realizar, de igualmanera se determinan los siguientes parametros:
+
+- **Frecuencia de la serie:** Anual
+- **Inicio de la Serie:** `r Inicio_TS`
+- **Fin de la Serie:** `r Fin_TS`
+
+adicionalmente se resaliza la verificacion de la clase de la serie de tiempo:
+
+- **Calse de la serie:** `r Clase_TS`
+
+
+### - *Garficos*
+```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
+# Graficar la serie de tiempo de homicidios en Colombia con plotly
+plot_ly(x = time(df_ts), y = df_ts, type = "scatter", mode = "lines", line = list(color = "blue", width = 2)) %>%
+  layout(title = list(text = "Homicidios por mes en Colombia (2010 - 2024)", x = 0.5),  # Ajustar la posición del título
+         xaxis = list(title = "Meses"),
+         yaxis = list(title = "Homicidios"),
+         margin = list(l = 100, r = 100, t = 100, b = 100))  # Ajustar los márgenes para dejar espacio para la barra de herramientas
+```
+
+```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
+boxplot(df_ts ~ cycle(df_ts), xlab = "Meses", ylab = "Homicidios",
+        main = "Boxplot de los homicidios por meses")
+```
+
+Luego de analizar los resultados se evidencia que en el mes de abril hay mayor numero de homicidios, adicionalmente se evidencia que la media de los meses se encuentra entre los 400 y 500 homicidios.
+
+En 7 meses se observan unos valores atipicos que superan los 1000 homicidios y uno en el que se presentaron menos de 200, seria de gran valor hacer un analisis detallado de estos datos con el objetivo de entender mejor la naturaleza de estos resultados.
+
+```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
+#Gráfica de rezagos
+lag.plot(df_ts, 12, do.lines = F,main = "Grafica de Rezagos")
+
+```
+
+Para el caso de la grafica de rezagos se puede afirmar que no existe aleatoriedad, debido a que no se reflejan patrones identificables en los datos.
+
+
+### - *Media Movil*
+A continuacion se realiza el calculo de las medias moviles (SMA y EMA) de la serie de datos con el objetivo de obtener de forma mas clara el comportamiento de nuestra serie. 
+```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
+media_sim <- SMA(df_ts, n = 12)
+media_exp <- EMA(df_ts, n = 12) # el parámetro n significa que se utilizará los ultimos 12 datos
+Data_ts <- data.frame(fechas = seq(as.Date("2010-01-01"), by = "month",length.out = nrow(df)),
+                      homicidios = df_ts)
+```
+
+
+### - *Gráfica de medias moviles exponencial vs simple*
+```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
+ggplot(Data_ts, aes(x = fechas, y = homicidios))+
+  geom_line(aes(y = media_sim,color = "SMA"))+
+  geom_line(aes(y = media_exp,color = "EMA"))+
+  labs(x = " ", y = "Homicidios",
+       title = "Media móvil simple y exponencial de los Homicidios en Colombia 2010 a 2024")+
+  theme_minimal()+
+theme(legend.position = "top") +
+  scale_color_manual(name = " ",
+                     values = c("EMA" = "red", "SMA" = "blue"),
+                     labels = c("EMA" = "Media Móvil Exponencial", "SMA" = "Media Móvil Simple"))+
+  scale_x_date(date_breaks = "1 year", date_labels = "%Y")
+```
+Durante los últimos 13 años, los homicidios en Colombia han experimentado un aumento gradual.
+Las medias móviles de 12 meses muestran que en 2010 había entre 230 y 240 asesinatos, comparados con 1000 a 850 asesinatos en los últimos meses de 2023 y enero de 2024, quintuplicando así las cifras de este fenómeno en el país. 
+Se observa una tendencia a la baja al finalizar el primer semestre de cada año, seguido por un aumento durante los últimos meses, adicionalmente, se identifican dos períodos de fluctuaciones significativas: 
+
+- Una baja notable al comienzo de la pandemia en 2020, dada la crisis sanitaria provocada por el COVID y la política de aislamiento social
+
+- Un aumento sostenido en casi todo 2023, este comportamiento podria estar asociados a aumentos de bandas criminales y grupos armados como efecto de los cambios politicos que se generaron con el actual gobierno en materia de seguridad.
+
+En cuanto a las líneas móviles exponenciales versus las simples, aunque no coinciden exactamente en su posición, sí lo hacen en cuanto a su tendencia, siendo la línea simple más suavizada que la exponencial.
+
+
+```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
+ggplot(Data_ts, aes(x = fechas, y = homicidios))+
+  geom_line(color = "grey")+
+  geom_line(aes(y = media_exp, color = "EMA"), linewidth = 0.5)+
+  geom_line(aes(y = media_sim, color = "SMA"), linewidth = 0.5, alpha = 0.5)+
+  labs(x = " ", y = "Homicidios",
+       title = "Medias moviles vs cantidad de homicidios en Colombia 2010 a 2024")+
+  theme_minimal()+
+  theme(legend.position = "top") +
+  scale_color_manual(name = " ",
+                     values = c("EMA" = "red", "SMA" = "blue"),
+                     labels = c("EMA" = "Media Móvil Exponencial", "SMA" = "Media Móvil Simple"))+
+  scale_x_date(date_breaks = "1 year", date_labels = "%Y")
+```
+En congruencia con las medias móviles, se observa que la cantidad de homicidios no supera los 375 casos mensuales mensuales antes del 2020, sin embargo en el los periodos posteriores como en el 2023 se observa que se alcanzan valores tope hasta de 1000 muertes mesuales en el país a causa de los homicidios.
+
+### - **Transformaciones básicas Series de Tiempo**
+A continuacion realizaremos algunas transformaciones que nos permitiran detallar mucho mejor el analisis de nuestra serie de tiempos.
+
+
+```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
+fit_df <- decompose(df_ts, type='additive') # el componente 'additive' relaciona tendencia, estacionalidad y residuo
+
+autoplot(fit_df, color = "aquamarine3") +
+  labs(title = "Descomposición de la serie de tiempo",                   
+       x = "Tiempo",
+       y = "Valor") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5, size = 16),  # Centro el título y cambio el tamaño
+  )
+
+```
+Acorde a la tendencia el comportamiento de los homicidios es lineal durante los años 2010 y 2020. Posteriormente, se vuelve creciente hasta finales del 2023.
