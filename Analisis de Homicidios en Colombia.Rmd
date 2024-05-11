@@ -35,11 +35,14 @@ library(ggfortify)
 library(forecast)
 library(TTR)
 library(lubridate)
+library(tseries) #Prueba Dicker
+library(stats) # Funciones ACF y PACF
 library(plotly)
 library(mice)
 library(VIM)
 library(htmlwidgets)
 library(htmltools)
+
 ```
 
 
@@ -221,8 +224,7 @@ ggplot(Data_ts, aes(x = fechas, y = homicidios))+
 En congruencia con las medias móviles, se observa que la cantidad de homicidios no supera los 375 casos mensuales mensuales antes del 2020, sin embargo en el los periodos posteriores como en el 2023 se observa que se alcanzan valores tope hasta de 1000 muertes mesuales en el país a causa de los homicidios.
 
 ### - **Transformaciones básicas Series de Tiempo**
-A continuacion realizaremos algunas transformaciones que nos permitiran detallar mucho mejor el analisis de nuestra serie de tiempos.
-
+A continuacion realizaremos algunas transformaciones que nos permitiran detallar mucho mejor el analisis de nuestra serie de tiempo.
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
 fit_df <- decompose(df_ts, type='additive') # el componente 'additive' relaciona tendencia, estacionalidad y residuo
@@ -238,43 +240,72 @@ autoplot(fit_df, color = "aquamarine3") +
 ```
 Acorde a la tendencia el comportamiento de los homicidios es lineal durante los años 2010 y 2020. Posteriormente, se vuelve creciente hasta finales del 2023.
 
-### - *Estacionalidad*
+
+### - *Identificación de Estacionalidad \nPrueba Dicker - Fuller*
+
+```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
+
+adf.test(df_ts)
+```
+Dado que el **p-value** es menor al nivel de significancia de **0.05** se acepta la hipotesis alternativa de que la serie sí es estacionaria
+
+### - *Estacionalidad por año*
 ```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
 ggseasonplot(df_ts)+
   theme_minimal()+
-  labs(x = "Mes", title = "Estacionalidad de los homicidios por mes")
+  labs(x = "Mes", title = "Estacionariedad de los homicidios por mes")
 ```
 
-Se evidencins picos en la mayoría de los años, principalmente en los meses de febrero, abril, junio y octubre, a excepción de 2023; mientras que los meses donde menos homicidios se presentan es mayo, septiembre y noviembre.
+Se evidencian picos en la mayoría de los años principalmente en los meses de febrero, abril, junio y octubre, a excepción de 2023; a diferencia de los meses mayo, septiembre y noviembre, don de la cantidad de hpmicidios disminuye.
 
-### - *Eliminación de tendencia*
 
-Dado a que la teoria de las series de tiempo precinde de la eliminación de la tendencia y la estacionalidad, para una mejor modelización y capacidad predictiva se procede a eliminar dichos componentes.
+### - *Diferenciación*
+
+Dado a que en los modelos de series de tiempo se requiere tener en cuenta la estacionariedad, para una mejor modelización y capacidad predictiva se procede a obtener las diferencias para hallarla. En otras palabras, se realiza para la estructuración del modelo a realizar.
+
+**¿Cuántas diferencias se necesitan para hallar estacionariedad?**
+
 ```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
-x = log(df_ts)
-e_tendencia = diff(x)
+Diferencias=ndiffs(df_ts)
+
 ```
 
+Despues de realizar el procedimiento de diferenciacion se llega a la conclusion que se solo se requieren `r Diferencias` diferencias para identificar la estacionariedad.
 
-### - *Grafica de Serie de Tiempo Sin Tendencia*
+### - *Transformación para la variabilidad*
 ```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
-plot(e_tendencia, 
-     xlab = "Años", ylab = "Número de homicidios",
-     main = "TS Homicidios en Colombia (2010 - 2024) \nSin Tendencia",
-     col = "blue", type = "l", lwd = 2)
-grid()
-
-# Ajustar el tamaño de la fuente
-par(cex.lab=1.2, cex.main=1.4, cex.axis=1.2)
+x = log(df_ts) 
 ```
 
-### - *Eliminación de la estacionalidad*
+A continuacion, se aplica una transformacion logaritmica a la serie de tiempo, esto se realiza para cumplir con el supuesto de que la serie tiene variabilidad constante, para una mayor estabilidad e interpretación de datos.
+
+
+### - *Aplicación de diferenciación*
 ```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
-e_t_estacionalidad = diff(e_tendencia, lag=12)
-plot(e_t_estacionalidad, xlab = "Años", ylab = "Número de homicidios",
-     main = "TS Homicidios en Colombia (2010 - 2024) \nSin Tendencia y Estacionalidad",
-     col = "blue", type = "l", lwd = 2)
-grid()
+a_estacio = diff(x)
+plot(a_estacio, xlab = "Años", ylab = " ",
+     main = "TS estacionariedad en los homicidios de Colombia \n2010 - 2024")
 ```
 
+### - *Aplicación de función ACF*
+```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
+acf(a_estacio, main = "Autocorrelación")
+```
+
+El realizar la autocorrelacion nos permite identificar un comportamiento estacionario con respecto al tiempo en la serie de tiempo.
+
+### - *Aplicación de función PACF*
+```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
+pacf(a_estacio, main = "Autocorrelación parcial")
+```
+
+Al identificar la estructura autorregresiva en la serie, se tiene que, se necesitan 3 rezagos para predecir el valor actual de la serie.
+
+### - *Modelado*
+
+**ARIMA(p,d,q); donde, p = rezagos, d = diferenciación, y q = orden media móvil**
+```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
+Modelo <- Arima(a_estacio, order = c(3,0,0))
+summary(Modelo)
+```
 
