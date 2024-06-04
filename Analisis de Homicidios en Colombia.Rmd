@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 ```{r, echo=FALSE, out.width="36%",out.height=="20%", fig.align = "center",warning=FALSE}
-knitr::include_graphics("C:/Users/W10/OneDrive/Escritorio/Maestria/Series de Tiempo/Actividad 1/Imagen Analisis Homicidios.jpg")
+knitr::include_graphics("C:/Users/jrgal/OneDrive/Escritorio/Maestria/Series de Tiempo/Actividad 1/Imagen Analisis Homicidios.jpg")
 
 ```
 
@@ -44,13 +44,17 @@ library(htmlwidgets)
 library(htmltools)
 library(timsac)
 library(changepoint)
+library(fpp3)
+library(prophet)
+library(dplyr)
+
 
 ```
 
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
 #Cargue de data_set
-data <- read_csv("C:/Users/W10/OneDrive/Escritorio/Maestria/Series de Tiempo/Actividad 2/Unidad 2 y 3/Serie_de_tiempo_avance_dia3/Serie_de_tiempo/Homicidios.csv")
+data <- read_csv("C:/Users/jrgal/OneDrive/Escritorio/Maestria/Series de Tiempo/Actividad 2/Unidad 2 y 3/Serie_de_tiempo_avance_dia3/Serie_de_tiempo/Homicidios.csv")
 ```
 
 
@@ -115,9 +119,9 @@ df <- data %>% select(`FECHA HECHO`, CANTIDAD) %>%
   summarise(HOMICIDIOS = sum(CANTIDAD)) %>% 
   rename(FECHA = `FECHA HECHO`) %>% 
   transmute(FECHA, HOMICIDIOS) %>% 
-  mutate(Año = year(FECHA),
+  mutate(Anio = year(FECHA),
          Mes = month(FECHA),
-         AM = paste0(Año, Mes)) %>% 
+         AM = paste0(Anio, Mes)) %>% 
   select(AM, HOMICIDIOS) %>% 
   group_by(AM) %>% 
   summarise(Homicidios = sum(HOMICIDIOS))
@@ -190,12 +194,12 @@ ggplot(Data_ts, aes(x = fechas, y = homicidios))+
   geom_line(aes(y = media_sim,color = "SMA"))+
   geom_line(aes(y = media_exp,color = "EMA"))+
   labs(x = " ", y = "Homicidios",
-       title = "Media móvil simple y exponencial de los Homicidios en Colombia 2010 a 2024")+
+       title = "Media movil simple y exponencial de los Homicidios en Colombia 2010 a 2024")+
   theme_minimal()+
 theme(legend.position = "top") +
   scale_color_manual(name = " ",
                      values = c("EMA" = "red", "SMA" = "blue"),
-                     labels = c("EMA" = "Media Móvil Exponencial", "SMA" = "Media Móvil Simple"))+
+                     labels = c("EMA" = "Media Movil Exponencial", "SMA" = "Media Movil Simple"))+
   scale_x_date(date_breaks = "1 year", date_labels = "%Y")
 ```
 Durante los últimos 13 años, los homicidios en Colombia han experimentado un aumento gradual.
@@ -220,7 +224,7 @@ ggplot(Data_ts, aes(x = fechas, y = homicidios))+
   theme(legend.position = "top") +
   scale_color_manual(name = " ",
                      values = c("EMA" = "red", "SMA" = "blue"),
-                     labels = c("EMA" = "Media Móvil Exponencial", "SMA" = "Media Móvil Simple"))+
+                     labels = c("EMA" = "Media Movil Exponencial", "SMA" = "Media Movil Simple"))+
   scale_x_date(date_breaks = "1 year", date_labels = "%Y")
 ```
 En congruencia con las medias móviles, se observa que la cantidad de homicidios no supera los 375 casos mensuales mensuales antes del 2020, sin embargo en el los periodos posteriores como en el 2023 se observa que se alcanzan valores tope hasta de 1000 muertes mesuales en el país a causa de los homicidios.
@@ -232,7 +236,7 @@ A continuacion realizaremos algunas transformaciones que nos permitiran detallar
 fit_df <- decompose(df_ts, type='additive') # el componente 'additive' relaciona tendencia, estacionalidad y residuo
 
 autoplot(fit_df, color = "aquamarine3") +
-  labs(title = "Descomposición de la serie de tiempo",                   
+  labs(title = "Descomposicion de la serie de tiempo",                   
        x = "Tiempo",
        y = "Valor") +
   theme_minimal() +
@@ -285,20 +289,21 @@ A continuacion, se aplica una transformacion logaritmica a la serie de tiempo, e
 ### - *Aplicación de diferenciación*
 ```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
 a_estacio = diff(x)
-plot(a_estacio, xlab = "Años", ylab = " ",
+plot(a_estacio, xlab = "Anios", ylab = " ",
      main = "TS estacionariedad en los homicidios de Colombia \n2010 - 2024")
 ```
 
 ### - *Aplicación de función ACF*
 ```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
-acf(a_estacio, main = "Autocorrelación")
+library(forecast)
+acf(a_estacio, main = "Autocorrelacion")
 ```
 
 El realizar la autocorrelacion nos permite identificar un comportamiento estacionario con respecto al tiempo en la serie de tiempo.
 
 ### - *Aplicación de función PACF*
 ```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
-pacf(a_estacio, main = "Autocorrelación parcial")
+pacf(a_estacio, main = "Autocorrelacion parcial")
 ```
 
 Al identificar la estructura autorregresiva en la serie, se tiene que, se necesitan 3 rezagos para predecir el valor actual de la serie.
@@ -314,7 +319,7 @@ La primera decisión radica en elegir el tipo de patrón de estacionalidad, es d
 ```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
 Modelo <- HoltWinters(df_ts, seasonal = "multiplicative")
 
-plot(Modelo, main = "Predicciones con modelo Holt-Winters", ylab = "Cantidad de Homicidios", xlab = "Tiempo (Años)")
+plot(Modelo, main = "Predicciones con modelo Holt-Winters", ylab = "Cantidad de Homicidios", xlab = "Tiempo (Anios)")
 legend("bottomright", legend = c("Data", "Prediction"), col = c("black", "red"), lty = 1)
 
 ```
@@ -346,7 +351,7 @@ Para un mejor ajuste, se probará modificar los parametros **Beta**, **Gamma** y
 ```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
 Modelo2 <- HoltWinters(df_ts, seasonal = "multiplicative", alpha = 0.7,
                        beta = 0, gamma = 0.9)
-plot(Modelo2, main = "Predicciones con modelo Holt-Winters (Uso de parámetros: Nivel)")
+plot(Modelo2, main = "Predicciones con modelo Holt-Winters (Uso de parametros: Nivel)")
 legend("bottomright", legend = c("Data", "Prediction"), col = c("black", "red"), lty = 1)
 ```
 
@@ -355,7 +360,7 @@ Al modificar dando más peso al parámetro **Gamma** correspondiente al Nivel, s
 ```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
 Modelo3 <- HoltWinters(df_ts, seasonal = "multiplicative", alpha = 0.7,
                        beta = 0.9, gamma = 0.1)
-plot(Modelo3, main = "Predicciones con modelo Holt-Winters (Uso de parámetros: Estacionalidad)")
+plot(Modelo3, main = "Predicciones con modelo Holt-Winters \n (Uso de parametros: Estacionalidad)")
 legend("topleft", legend = c("Data", "Prediction"), col = c("black", "red"), lty = 1)
 
 ```
@@ -365,7 +370,7 @@ Al modificar dando más peso al parámetro **Beta** correspondiente a la Estacio
 ```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
 Modelo4 <- HoltWinters(df_ts, seasonal = "multiplicative", alpha = 0.7,
                        beta = 0.1, gamma = 0.1)
-plot(Modelo4, main = "Predicciones con modelo Holt-Winters (Uso de parámetros: Estacionalidad)")
+plot(Modelo4, main = "Predicciones con modelo Holt-Winters (Uso de parametros: Estacionalidad)")
 legend("topleft", legend = c("Data", "Prediction"), col = c("black", "red"), lty = 1)
 
 ```
@@ -460,7 +465,7 @@ shapiro.test(residuales)
 
 ```
 
-Se puede observar que que hay residuos extremos tanto en la parte inferior como superior de la linea de ajuste. Adicionalmente el test de Shapiro, establece que no hay normalidad en los residuos.
+Se puede observar que que hay residuos extremos tanto en la parte inferior como superior de la linea de ajuste. Adicionalmente en el test de Shapiro el valor **W: 0,856**, establece que los datos se alejan de un comportamiento normal, en lina con este resultado el **p-value: 1.487e-11** indica que existe suficiente evidencia estadistica para rechazar la hipotesis nula **Ho:Los datos provienen de una distribucion normal**.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
 Box.test(residuales, type="Ljung-Box")
@@ -468,6 +473,147 @@ Box.test(residuales, type="Ljung-Box")
 ```
 
 Dado que la p-value es mayor a 0.05 se acepta la hipotesis nula, lo que significa que en primera instacia hay una buena especificación del modelo, las predicciones son confiables y los residuos son aleatorios, lo que permite al modelo capturar adecuadamente la estructura de dependencia temporal de los datos.
+
+
+# **Modelo Prophet**
+
+Se realiza la aplicacion del modelo **Prophet**, debido a que el modelo solo reconoce las variables **ds** para unidad de tiempo y **y** para los valores de resultados se convierten las variables **fechas** y **homicidios** a este formato como se observa en la muestra a continuacion: 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
+# La serie de tiempo debe ser estacionaria.
+
+Data_ts <- Data_ts %>% rename(ds = fechas, y = homicidios) # El nombre para no modificar dataset original, Se debe renombrar las variables fechas y homicidios a ds y Y respectivamente, ya que la libreria solo conoce estos datos.
+
+head(Data_ts)
+
+```
+
+
+```{r echo=FALSE, message=TRUE, warning=TRUE, fig.align='center'}
+
+# Ajustar el modelo Prophet
+modelo_prophet <- prophet(Data_ts,       # Se toma el nuevo dataset
+                          yearly.seasonality = TRUE,
+                          weekly.seasonality = FALSE, 
+                          daily.seasonality = FALSE )
+
+```
+
+Dado a que los datos se encuentran por mes, el ajuste del modelo se realiza activando la estacionalidad anual y desactivando la diaria y semanal.
+
+
+
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
+# Crear un dataframe con las fechas futuras
+futuro_prophet <- make_future_dataframe(modelo_prophet, periods = 11, freq = 'month')
+```
+
+El objetivo de prediccion para el modelo ajustado se establece para 11 periodos de la serie de tiempo, con una frecuencia mensual, lo que nos entregaria un resultado que abarca hasta diciembre 2024.
+
+## Predicciones
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
+# Hacer las predicciones
+forecast_prophet <- predict(modelo_prophet, futuro_prophet)
+```
+
+### - Visualizacion del Modelo
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
+# Visualizar los resultados
+plot(modelo_prophet, forecast_prophet)
+```
+
+- Los puntos negros representan medidas reales de la serie de tiempo \n
+- La linea azul el pronóstico de Prophet el cual muestra un ajuste significativo a los datos reales \n
+- La banda azul representa el intervalo de incertidumbre, sin embargo este se muestra bastante conservador \n
+
+El el grafico se puede observar el comportamiento durante el periodo de pandemia y la variación creciente del 2023 por fuera de las bandas predichas por el modelo, este comportamiento se muestra atipico en comparacion con el historico, lo que podria ser relevante analizar teniendo en cuenta la importancia de este indicador para la seguridad publica.
+
+### - Componentes del Modelo
+A continuacion se presentan los componentes de modelo **prophet** en los que se observa la tendencia y los residuos, permitiendo identificar el comportamiento del modelo hasta la prediccion.
+
+Para el caso de la tendencia, es claro que la prediccion presenta un comportamiento ascendente para el año **2024**.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
+prophet_plot_components(modelo_prophet, forecast_prophet)
+
+
+```
+
+La grafica de residuales de la prediccion muestran, que a finales de septiembre los homicidios en el país tienden a la baja; adicionalmente, los meses de julio y enero son donde este indicador sufre un incremento significativo en comparacion con el resto de los meses.
+      
+
+### - Comparación entre modelos
+
+Se reversan las transformaciones en el modelo ARIMA para que todos las predicciones estén en la misma escala
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
+# Comparación entre modelos
+
+# Se generan predicciones para el modelo ARIMA 
+# se genera un modelo nuevo con los datos sin trasnformar
+modelo_arima <- auto.arima(df_ts)
+arima_forecasts <- forecast(modelo_arima)
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
+# Se generan predicciones para Prophet 
+prophet_forecasts <- predict(modelo_prophet)
+```
+
+### - Estimacion de Métricas de precisión
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
+# Se estiman las métricas de precisión
+# Se crea una función para estimar las métricas en todos los modelos 
+compute_accuracy <- function(actual, forecast) {
+  tibble(
+    ME = mean(forecast - actual),
+    RMSE = sqrt(mean((forecast - actual)^2)),
+    MAE = mean(abs(forecast - actual)),
+    MPE = mean((forecast - actual) / actual) * 100,
+    MAPE = mean(abs((forecast - actual) / actual)) * 100,
+    MASE = mean(abs(forecast - actual)) / mean(abs(diff(actual))),
+    RMSSE = sqrt(mean((forecast - actual)^2)) / sqrt(mean(diff(actual)^2)),
+    ACF1 = acf(forecast - actual, plot = FALSE)$acf[2]
+  )
+}
+```
+
+
+### - Valores Originales
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
+actual_values <-tail(Data_ts$y, n = 12)
+
+actual_values
+```
+
+### - Estimacion de Metricas de Modelo
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
+# Se estiman las métricas para cada modelo
+hw_accuracy <- compute_accuracy(actual_values, tail(Modelo$fitted, n = 12))
+arima_accuracy <- compute_accuracy(actual_values, tail(arima_forecasts$fitted, n = 12))
+prophet_accuracy <- compute_accuracy(actual_values, tail(prophet_forecasts$yhat, n = 12))
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
+# Se combinan los resultados en una sola tabla
+accuracy_table <- bind_rows(
+  tibble(Model = "Holt-Winters", hw_accuracy),
+  tibble(Model = "ARIMA", arima_accuracy),
+  tibble(Model = "Prophet", prophet_accuracy)
+)
+
+# Se imprime la tabla
+print(accuracy_table)
+```
+
+De acuerdo a los resultados obtenidos, ell modelo ARIMA fue el modelo que obtuvo los mejores resultados en todas las métricas a excepción del MPE.
 
 
 
