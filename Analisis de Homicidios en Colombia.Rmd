@@ -596,10 +596,12 @@ actual_values
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
 # Se estiman las métricas para cada modelo
-hw_accuracy <- compute_accuracy(actual_values, tail(Modelo$fitted, n = 12))
+hw_accuracy <- compute_accuracy(actual_values, tail(Modelo_evaluation$fitted, n = 12))
 arima_accuracy <- compute_accuracy(actual_values, tail(arima_forecasts$fitted, n = 12))
 prophet_accuracy <- compute_accuracy(actual_values, tail(prophet_forecasts$yhat, n = 12))
 ```
+
+
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
 # Se combinan los resultados en una sola tabla
@@ -613,7 +615,7 @@ accuracy_table <- bind_rows(
 print(accuracy_table)
 ```
 
-De acuerdo a los resultados obtenidos, ell modelo ARIMA fue el modelo que obtuvo los mejores resultados en todas las métricas a excepción del MPE.
+De acuerdo a los resultados obtenidos, el modelo **Holt-Winters** fue el modelo que obtuvo los mejores resultados en todas las métricas.
 
 
 
