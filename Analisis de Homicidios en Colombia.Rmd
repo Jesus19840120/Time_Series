@@ -47,8 +47,7 @@ library(changepoint)
 library(fpp3)
 library(prophet)
 library(dplyr)
-
-
+library(RSNNS)
 ```
 
 
@@ -233,7 +232,7 @@ En congruencia con las medias móviles, se observa que la cantidad de homicidios
 A continuacion realizaremos algunas transformaciones que nos permitiran detallar mucho mejor el analisis de nuestra serie de tiempo.
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
-fit_df <- decompose(df_ts, type='additive') # el componente 'additive' relaciona tendencia, estacionalidad y residuo
+fit_df <- decompose(Data_ts$homicidios, type='additive') # el componente 'additive' relaciona tendencia, estacionalidad y residuo
 
 autoplot(fit_df, color = "aquamarine3") +
   labs(title = "Descomposicion de la serie de tiempo",                   
@@ -247,19 +246,20 @@ autoplot(fit_df, color = "aquamarine3") +
 Acorde a la tendencia el comportamiento de los homicidios es lineal durante los años 2010 y 2020. Posteriormente, se vuelve creciente hasta finales del 2023.
 
 
-### - *Identificación de Estacionalidad \nPrueba Dicker - Fuller*
+### - *Identificación de Estacionaridad \nPrueba Dicker - Fuller*
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
 
-adf.test(df_ts)
+adf.test(Data_ts$homicidios)
+
 ```
 Dado que el **p-value** es menor al nivel de significancia de **0.05** se acepta la hipotesis alternativa de que la serie sí es estacionaria
 
 ### - *Estacionalidad por año*
 ```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
-ggseasonplot(df_ts)+
+ggseasonplot(Data_ts$homicidios)+
   theme_minimal()+
-  labs(x = "Mes", title = "Estacionariedad de los homicidios por mes")
+  labs(x = "Mes", title = "Estacionalidad de los homicidios por mes")
 ```
 
 Se evidencian picos en la mayoría de los años principalmente en los meses de febrero, abril, junio y octubre, a excepción de 2023; a diferencia de los meses mayo, septiembre y noviembre, don de la cantidad de hpmicidios disminuye.
@@ -272,7 +272,7 @@ Dado a que en los modelos de series de tiempo se requiere tener en cuenta la est
 **¿Cuántas diferencias se necesitan para hallar estacionariedad?**
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
-Diferencias=ndiffs(df_ts)
+Diferencias=ndiffs(Data_ts$homicidios)
 
 ```
 
@@ -280,7 +280,8 @@ Despues de realizar el procedimiento de diferenciacion se llega a la conclusion 
 
 ### - *Transformación para la variabilidad*
 ```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
-x = log(df_ts) 
+x=Data_ts
+x$homicidios=log(x$homicidios)
 ```
 
 A continuacion, se aplica una transformacion logaritmica a la serie de tiempo, esto se realiza para cumplir con el supuesto de que la serie tiene variabilidad constante, para una mayor estabilidad e interpretación de datos.
@@ -288,7 +289,7 @@ A continuacion, se aplica una transformacion logaritmica a la serie de tiempo, e
 
 ### - *Aplicación de diferenciación*
 ```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
-a_estacio = diff(x)
+a_estacio = diff(x$homicidios)
 plot(a_estacio, xlab = "Anios", ylab = " ",
      main = "TS estacionariedad en los homicidios de Colombia \n2010 - 2024")
 ```
@@ -317,7 +318,7 @@ La primera decisión radica en elegir el tipo de patrón de estacionalidad, es d
 ### Multiplicative
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
-Modelo <- HoltWinters(df_ts, seasonal = "multiplicative")
+Modelo <- HoltWinters(Data_ts$homicidios, seasonal = "multiplicative")
 
 plot(Modelo, main = "Predicciones con modelo Holt-Winters", ylab = "Cantidad de Homicidios", xlab = "Tiempo (Anios)")
 legend("bottomright", legend = c("Data", "Prediction"), col = c("black", "red"), lty = 1)
@@ -349,7 +350,7 @@ Para un mejor ajuste, se probará modificar los parametros **Beta**, **Gamma** y
 **Gamma** es un número entre 0 y 1 que determina cuanto peso se le da a las observaciones más recientes en cuanto su nivel (promedio móvil).
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
-Modelo2 <- HoltWinters(df_ts, seasonal = "multiplicative", alpha = 0.7,
+Modelo2 <- HoltWinters(Data_ts$homicidios, seasonal = "multiplicative", alpha = 0.7,
                        beta = 0, gamma = 0.9)
 plot(Modelo2, main = "Predicciones con modelo Holt-Winters (Uso de parametros: Nivel)")
 legend("bottomright", legend = c("Data", "Prediction"), col = c("black", "red"), lty = 1)
@@ -358,7 +359,7 @@ legend("bottomright", legend = c("Data", "Prediction"), col = c("black", "red"),
 Al modificar dando más peso al parámetro **Gamma** correspondiente al Nivel, se puede apreciar como las estimaciones cambian en magnitud y los picos y valles no coinciden en igual proporción como en el modelo original.
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
-Modelo3 <- HoltWinters(df_ts, seasonal = "multiplicative", alpha = 0.7,
+Modelo3 <- HoltWinters(Data_ts$homicidios, seasonal = "multiplicative", alpha = 0.7,
                        beta = 0.9, gamma = 0.1)
 plot(Modelo3, main = "Predicciones con modelo Holt-Winters \n (Uso de parametros: Estacionalidad)")
 legend("topleft", legend = c("Data", "Prediction"), col = c("black", "red"), lty = 1)
@@ -368,7 +369,7 @@ legend("topleft", legend = c("Data", "Prediction"), col = c("black", "red"), lty
 Al modificar dando más peso al parámetro **Beta** correspondiente a la Estacionalidad, se puede apreciar como las estimaciones del 2024 es muy diferente a los modelos anteriores, lo cual se explica al considerar lo ocurrido en el año 2023 como consecuencia de factores externos que sólo afectan en ese periodo de tiempo.
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
-Modelo4 <- HoltWinters(df_ts, seasonal = "multiplicative", alpha = 0.7,
+Modelo4 <- HoltWinters(Data_ts$homicidios, seasonal = "multiplicative", alpha = 0.7,
                        beta = 0.1, gamma = 0.1)
 plot(Modelo4, main = "Predicciones con modelo Holt-Winters (Uso de parametros: Estacionalidad)")
 legend("topleft", legend = c("Data", "Prediction"), col = c("black", "red"), lty = 1)
@@ -412,7 +413,7 @@ Box.test(Modelo_evaluation$residuals, lag=30, type="Ljung-Box")
 
 ```
 
-Dado que **p-value** es mayor a **0.0**5 se acepta la hipotesis nula advertida en el parrafo anterior, lo que significa que en primera instacia hay una buena especificación del modelo, las predicciones son confiables y los residuos son aleatorios, lo que permite al modelo capturar adecuadamente la estructura de dependencia temporal de los datos.
+Dado que **p-value** es mayor a **0.05** se acepta la hipotesis nula advertida en el parrafo anterior, lo que significa que en primera instacia hay una buena especificación del modelo, las predicciones son confiables y los residuos son aleatorios, lo que permite al modelo capturar adecuadamente la estructura de dependencia temporal de los datos.
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
 hist(Modelo_evaluation$residuals, main = "Residuos del modelo Holt-Winters")
@@ -475,14 +476,14 @@ Box.test(residuales, type="Ljung-Box")
 Dado que la p-value es mayor a 0.05 se acepta la hipotesis nula, lo que significa que en primera instacia hay una buena especificación del modelo, las predicciones son confiables y los residuos son aleatorios, lo que permite al modelo capturar adecuadamente la estructura de dependencia temporal de los datos.
 
 
-# **Modelo Prophet**
+### **Modelo Prophet**
 
 Se realiza la aplicacion del modelo **Prophet**, debido a que el modelo solo reconoce las variables **ds** para unidad de tiempo y **y** para los valores de resultados se convierten las variables **fechas** y **homicidios** a este formato como se observa en la muestra a continuacion: 
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
 # La serie de tiempo debe ser estacionaria.
 
-Data_ts <- Data_ts %>% rename(ds = fechas, y = homicidios) # El nombre para no modificar dataset original, Se debe renombrar las variables fechas y homicidios a ds y Y respectivamente, ya que la libreria solo conoce estos datos.
+Data_ts <- Data_ts %>% rename(ds = fechas, y = homicidios) # se modifica el nombre para no modificar el dataset original, Se debe renombrar las variables fechas y homicidios a ds y Y respectivamente, ya que la libreria solo conoce estos datos.
 
 head(Data_ts)
 
@@ -530,7 +531,7 @@ plot(modelo_prophet, forecast_prophet)
 - La linea azul el pronóstico de Prophet el cual muestra un ajuste significativo a los datos reales \n
 - La banda azul representa el intervalo de incertidumbre, sin embargo este se muestra bastante conservador \n
 
-El el grafico se puede observar el comportamiento durante el periodo de pandemia y la variación creciente del 2023 por fuera de las bandas predichas por el modelo, este comportamiento se muestra atipico en comparacion con el historico, lo que podria ser relevante analizar teniendo en cuenta la importancia de este indicador para la seguridad publica.
+En el grafico se puede observar el comportamiento durante el periodo de pandemia y la variación creciente del 2023 por fuera de las bandas predichas por el modelo, este comportamiento se muestra atipico en comparacion con el historico, lo que podria ser relevante analizar teniendo en cuenta la importancia de este indicador para la seguridad publica.
 
 ### - Componentes del Modelo
 A continuacion se presentan los componentes de modelo **prophet** en los que se observa la tendencia y los residuos, permitiendo identificar el comportamiento del modelo hasta la prediccion.
@@ -546,25 +547,136 @@ prophet_plot_components(modelo_prophet, forecast_prophet)
 La grafica de residuales de la prediccion muestran, que a finales de septiembre los homicidios en el país tienden a la baja; adicionalmente, los meses de julio y enero son donde este indicador sufre un incremento significativo en comparacion con el resto de los meses.
       
 
-### - Comparación entre modelos
+### **Comparación entre modelos**
 
-Se reversan las transformaciones en el modelo ARIMA para que todos las predicciones estén en la misma escala
-
-```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
-# Comparación entre modelos
-
-# Se generan predicciones para el modelo ARIMA 
-# se genera un modelo nuevo con los datos sin trasnformar
-modelo_arima <- auto.arima(df_ts)
-arima_forecasts <- forecast(modelo_arima)
-```
+Se crea una nueva serie de tiempo excluyendo un número de meses determinado con la finalidad de tomar ese tiempo como periodo de evaluación y comparación de los resultados de los modelos
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
-# Se generan predicciones para Prophet 
-prophet_forecasts <- predict(modelo_prophet)
+
+# Número de meses a excluir
+num_meses_a_excluir <- 6
+# Número de meses que se mantienen 
+num_meses_a_mantener <- length(df_ts) - num_meses_a_excluir
+
+# Se determina el periodo en el cual termina la nueva serie de tiempo
+anio_final <- 2010 + (num_meses_a_mantener - 1) %/% 12
+mes_final <- (num_meses_a_mantener - 1) %% 12 + 1
+
+# Creación de nueva serie de tiempo excluyendo el # de meses determinado
+nueva_ts <- window(df_ts, end = c(anio_final, mes_final))
+
 ```
 
-### - Estimacion de Métricas de precisión
+### - Creación del modelo Holt-Winter Train
+
+Se realiza un nuevo modelo Holt-Winter para realizar el proceso de validacion de los modelos untilizando la serie de tiempo de entrenamiento con **-6 meses**.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
+# Creación de Modelo Holt-Winters con nueva serie de tiempo
+nuevoMod_holt_winters <- HoltWinters(nueva_ts, seasonal = "additive")
+
+# Se grafica el nuevo Modelo
+plot(nuevoMod_holt_winters, main = "Nuevo modelo Holt-Winters")
+
+```
+
+```{r echo=FALSE,warning=FALSE, message=FALSE}
+# Identificación de estacionariedad, prueba dicker - fuller para la nueva serie de tiempo
+
+adf.test(nueva_ts)
+
+#¿Cuántas diferencias se necesitan para hallar estacionariedad de la nueva serie?
+Cant_Diff= ndiffs(nueva_ts)
+
+```
+
+Dado que el p-value = 0.99 es mayor al nivel de significancia de 0.05 se rechaza la hipótesis alternativa de que la serie es estacionaria, luego de realizada la prueba **Dicker - Fuller** se identifica que se debe diferenciar la serie de tiempo `r Cant_Diff` ves ya que no es estacionaria.
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
+# Transformación para la variabilidad de la nueva serie
+nueva_ts_log = log(nueva_ts) 
+
+#Aplicación de diferenciación para la nueva serie
+nueva_ts_estacionaria = diff(nueva_ts_log)
+
+```
+
+### - Creación del modelo AutoArima Train
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
+# Se crea el nuevo modelo ARIMA correspondiente a la nueva serie de tiempo
+nuevoMod_arima <- auto.arima(nueva_ts_estacionaria)
+nuevoMod_arima
+
+# Se crea modelo ARIMA para serie de tiempo sin transformar
+nuevoMod_arima_sinTrans <- auto.arima(nueva_ts)
+```
+
+En respuesta a la ARIMA(0,0,1)(0,0,2)[12]; se tiene que el modelo mide una parte no estacional con los componentes (0,0,1) y estacional (0,0,2)[12]; esto, permitirá capturar patrones tanto de corto plazo como de largo plazo. De esta manera, la primera parte contiene 0 componentes autoregresivos, 0 de estacionariedad y 1 con media móvil; por su parte, la segunda contiene una media móvil de 2 y el período de evaluación de 12 meses refiriendose a que los datos se presentan de manera anual.
+
+### - Creación del modelo Prophet Train
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
+# Primero se debe crear el DF con la nueva serie estacionaria
+nuevo_Data_ts <- data.frame(
+  ds = as.Date(time(nueva_ts_estacionaria)),
+  y = as.numeric(nueva_ts_estacionaria)
+)
+# DF con serie no estacionaria
+nuevo_Data_ts_sinTrans <- data.frame(
+  ds = as.Date(time(nueva_ts)),
+  y = as.numeric(nueva_ts)
+)
+```
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
+# Se crea el nuevo modelo Prophet
+nuevoMod_prophet <- prophet(nuevo_Data_ts,       # Se toma el nuevo dataset
+                          yearly.seasonality = TRUE,
+                          weekly.seasonality = FALSE, 
+                          daily.seasonality = FALSE )
+# modelo Prophet basado en serie sin transformar
+nuevoMod_prophet_sinTrans <- prophet(nuevo_Data_ts_sinTrans,       
+                            yearly.seasonality = TRUE,
+                            weekly.seasonality = FALSE, 
+                            daily.seasonality = FALSE )
+```
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
+# Se realizan las predicciones para los meses estimados para la evaluación
+
+# Predicciones modelo Holt-winters
+hw_forecasts <- forecast(nuevoMod_holt_winters, h = num_meses_a_excluir)
+
+# Predicciones modelo ARIMA
+arima_forecasts <- forecast(nuevoMod_arima, h = num_meses_a_excluir)
+arima_forecasts_sinTrans <- forecast(nuevoMod_arima_sinTrans, h = num_meses_a_excluir)
+
+# Predicciones modelo Prophet
+# Se crea un DF con fechas futuras hasta enero de 2024
+nuevo_futuro_prophet <- make_future_dataframe(nuevoMod_prophet, periods = num_meses_a_excluir, freq = 'month')
+prophet_forecasts <- predict(nuevoMod_prophet, nuevo_futuro_prophet)
+prophet_forecasts_sinTrans <- predict(nuevoMod_prophet_sinTrans, nuevo_futuro_prophet)
+
+
+```
+
+Las predicciones de los modelos **ARIMA** y **Prophet** se deben transformar para volver a la escala original, para esto se debe tener como referencia los datos sin transformar
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
+# Para modelo Prophet se reconstruye a partir de la serie sin transformar
+reconstructed_prophet_forecast <- exp(c(log(Data_ts$y[1]), log(Data_ts$y[1]) + cumsum(prophet_forecasts$yhat)))
+
+# Para modelo ARIMA se requiere tener la serie completa de la predicción
+arima_forecast_completa <- c(arima_forecasts$fitted, arima_forecasts$mean)
+reconstructed_arima_forecast <- exp(c(log(Data_ts$y[1]), log(Data_ts$y[1]) + cumsum(arima_forecast_completa)))
+```
+
+
+
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
 # Se estiman las métricas de precisión
@@ -578,7 +690,7 @@ compute_accuracy <- function(actual, forecast) {
     MAPE = mean(abs((forecast - actual) / actual)) * 100,
     MASE = mean(abs(forecast - actual)) / mean(abs(diff(actual))),
     RMSSE = sqrt(mean((forecast - actual)^2)) / sqrt(mean(diff(actual)^2)),
-    ACF1 = acf(forecast - actual, plot = FALSE)$acf[2]
+    ACF1 = acf(forecast - actual , plot = FALSE)$acf[2]
   )
 }
 ```
@@ -586,39 +698,215 @@ compute_accuracy <- function(actual, forecast) {
 
 ### - Valores Originales
 
-```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
-actual_values <-tail(Data_ts$y, n = 12)
+Se imprime una muestra de los valores originales de la serie para los ultimos **6** meses, los cuales fueron utilizados para prueba del modelo
 
-actual_values
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
+actual_values <-tail(Data_ts$y, n = 6)
+
+table(actual_values)
 ```
 
 ### - Estimacion de Metricas de Modelo
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
 # Se estiman las métricas para cada modelo
-hw_accuracy <- compute_accuracy(actual_values, tail(Modelo_evaluation$fitted, n = 12))
-arima_accuracy <- compute_accuracy(actual_values, tail(arima_forecasts$fitted, n = 12))
-prophet_accuracy <- compute_accuracy(actual_values, tail(prophet_forecasts$yhat, n = 12))
+hw_accuracy <- compute_accuracy(actual_values,hw_forecasts$mean)
+arima_accuracy <- compute_accuracy(actual_values, tail(reconstructed_arima_forecast, n = num_meses_a_excluir))
+arima_accuracy_sinTrans <- compute_accuracy(actual_values, arima_forecasts_sinTrans$mean)
+prophet_accuracy <- compute_accuracy(actual_values, tail(reconstructed_prophet_forecast, n = num_meses_a_excluir))
+prophet_accuracy_sinTrans <- compute_accuracy(actual_values, tail(prophet_forecasts_sinTrans$yhat, n = num_meses_a_excluir))
+
+
 ```
 
 
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
-# Se combinan los resultados en una sola tabla
+# Se combinan los resultados en una sola tabla para series trasnformadas
 accuracy_table <- bind_rows(
   tibble(Model = "Holt-Winters", hw_accuracy),
   tibble(Model = "ARIMA", arima_accuracy),
   tibble(Model = "Prophet", prophet_accuracy)
 )
 
-# Se imprime la tabla
+# Se combinan los resultados en una sola tabla para series sin trasnformar
+accuracy_table_sinTrans <- bind_rows(
+  tibble(Model = "Holt-Winters", hw_accuracy),
+  tibble(Model = "ARIMA", arima_accuracy_sinTrans),
+  tibble(Model = "Prophet", prophet_accuracy_sinTrans)
+)
+
+# Se imprime la tabla con ARIMA y Prophet con series estacionarias
 print(accuracy_table)
+# Se imprime la tabla con ARIMA y Prophet con series no estacionarias
+print(accuracy_table_sinTrans)
+
+
 ```
 
-De acuerdo a los resultados obtenidos, el modelo **Holt-Winters** fue el modelo que obtuvo los mejores resultados en todas las métricas.
+Se realiza el ejercicio para diferentes periodos de evaluación: 12, 6 y 3 meses, es decir, se crea a partir de la serie de tiempo original una serie de entrenamiento y otra de prueba con el número de meses mencionado. En esta primera evaluación se usa la serie de datos trasnformados para que sea estacionaria antes de crear los modelos ARIMA y Prophet.\n
+
+**Para los 12 meses se obtuvieronlos siguientes resultados:**\n
+
+**Model            ME  RMSE   MAE     MPE  MAPE  MASE RMSSE  ACF1**\n
+
+ <chr>         <dbl> <dbl> <dbl>   <dbl> <dbl> <dbl> <dbl> <dbl>\n
+ 
+ 1 Holt-Winters  -95.1  333.  312.   0.104  33.9  2.10  1.28 0.271\n
+ 
+ 2 ARIMA        -805.   853.  805. -85.6    85.6  5.43  3.28 0.191\n
+ 
+ 3 Prophet       405.   536.  418.  60.5    61.6  2.82  2.06 0.295\n
+ 
+ **Para un periodo de evaluación de 6 meses se obtuvo:**\n
+
+**Model           ME  RMSE   MAE   MPE  MAPE  MASE RMSSE     ACF1**\n
+
+<chr>        <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>    <dbl>\n
+
+1 Holt-Winters  346.  482.  346.  56.2  56.2  2.09  1.56  0.0378\n
+
+2 ARIMA        -696.  760.  696. -73.1  73.1  4.20  2.45 -0.00611\n
+
+3 Prophet       335.  500.  366.  56.0  58.6  2.21  1.61  0.0812\n
+
+**Para un periodo de evaluación de 3 meses los resutlados fueron:** \n
+
+**Model           ME  RMSE   MAE   MPE  MAPE  MASE RMSSE      ACF1**\n
+
+  <chr>        <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>     <dbl>\n
+  
+1 Holt-Winters  668.  669.  668. 109.  109.   24.7  18.2 -0.000571\n
+
+2 ARIMA        -397.  398.  397. -65.0  65.0  14.7  10.8 -0.0982 \n
+
+3 Prophet       850.  856.  850. 139.  139.   31.5  23.3 -0.306 \n
+
+En esta segunda evaluación se realizan las predicciones de los modelos ARIMA y Prophet con la serie sin trasnformar.\n
+
+**Para los 12 meses se obtuvieronlos siguientes resultados:**\n
+
+**Model            ME  RMSE   MAE     MPE  MAPE  MASE RMSSE  ACF1**\n
+
+  <chr>         <dbl> <dbl> <dbl>   <dbl> <dbl> <dbl> <dbl> <dbl>\n
+  
+1 Holt-Winters  -95.1  333.  312.   0.104  33.9  2.10  1.28 0.271\n
+
+2 ARIMA         -38.0  289.  280.   5.81   32.2  1.89  1.11 0.231\n
+
+3 Prophet      -258.   397.  306. -19.9    27.6  2.07  1.53 0.237\n
+
+**Para un periodo de evaluación de 6 meses se obtuvo:**\n
+
+**Model           ME  RMSE   MAE   MPE  MAPE  MASE RMSSE   ACF1**\n
+
+  <chr>        <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>  <dbl> \n
+  
+1 Holt-Winters  346.  482.  346. 56.2   56.2  2.09  1.56 0.0378 \n
+
+2 ARIMA         252.  406.  318. 44.0   49.3  1.92  1.31 0.0302 \n
+
+3 Prophet      -119.  349.  327. -1.27  35.4  1.97  1.13 0.0369 \n
+
+**Para un periodo de evaluación de 3 meses los resutlados fueron:**\n
+
+**Model           ME  RMSE   MAE   MPE  MAPE  MASE RMSSE      ACF1**\n
+
+  <chr>        <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>     <dbl>\n
+  
+1 Holt-Winters  668.  669.  668. 109.  109.   24.7 18.2  -0.000571\n
+
+2 ARIMA         633.  634.  633. 104.  104.   23.4 17.2  -0.218\n
+
+3 Prophet       282.  284.  282.  46.1  46.1  10.4  7.72 -0.126 \n 
+
+De los resultados obtenidos se evidencia en primera medida que para los modelos **ARIMA** y **Prophet** las trasnformaciones efectuadas, usando las funciones log() y **diff()**, con la finalidad de tener una serie de datos estacionaria, dio como resultado valores de predicción con errores más altos una vez los datos se trasnformaron a la escala original. Esto sucedió en todos los casos a excepción de lo sucedido con el modelo ARIMA al evaluarse un periodo de predicción de 3 
+meses. Teniendo en consideración los resultados obtenidos de las predicciones con los modelos ARIMA y Prophet usando la serie de tiempo original, se puede concluir a partir de la métrica RMSE que el mejor modelo para realizar predicciones a largo plazo (12 meses) fue el modelo **ARIMA** y para los periodos de evaluación de 6 y 3 meses, el modelo con mejores resultados fue el Prophet. 
 
 
+### **Redes Neuronales ELMAN y JORDAN**
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
+
+# Se crea función para normalizar los datos
+normalize <- function(x) {
+  return((x - min(x)) / (max(x) - min(x)))
+}
+
+df_ts_normalized <- normalize(df_ts)
+```
+
+Se crean pares de entradas y salidas para aprendizaje supervisado, asumiendo 24 meses para predecir el siguiente mes.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
+
+lagged_data <- embed(df_ts_normalized, 25)
+inputs <- lagged_data[, 2:13]
+outputs <- lagged_data[, 1]
+
+# Se divide el conjunto de datos en entrenamiento y evaluación usando 
+# considerando el número de meses a excluir con fines de evaluación
+
+test_size <- num_meses_a_excluir
+train_size <- nrow(inputs) - test_size
+
+train_inputs <- inputs[1:train_size, ]
+train_outputs <- outputs[1:train_size]
+test_inputs <- inputs[(train_size + 1):nrow(inputs), ]
+test_outputs <- outputs[(train_size + 1):nrow(inputs)]
+```
+
+### - Entrenamiento del Modelo
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
+# Se entrena el modelo de Elman
+model <- elman(train_inputs, train_outputs, size = c(10, 5), learnFuncParams = c(0.1), maxit = 5000, linOut = TRUE)
+
+```
+
+Se entrena el modelo con las siguientes caracteristicas:
+
+- **Tasa de Aprendizaje:** 0.1\n
+- **Número Máximo de Iteraciones:** 5000
+
+Se usa  función plotIterativeError para ver evolución del error de la red a lo largo de las iteraciones de entrenamiento
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
+plotIterativeError(model)
+
+```
+
+En el grafico se puede observar como el error no converge a cero rápidamente lo que es una indicacion de que el ajuste del modelo es debil.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
+# Se realizan predicciones para evaluar el modelo
+predictionsElman <- predict(model, test_inputs)
+
+# Se denormalizan las predicciones para evaluar con los datos reales
+denormalize <- function(x, min, max) {
+  return(x * (max - min) + min)
+}
+
+min_val <- min(df_ts)
+max_val <- max(df_ts)
+
+predicted_values_Elman <- denormalize(predictionsElman, min_val, max_val)
+```
 
 
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
+# Se estiman las métricas para el modelo de Elman
+elman_accuracy <- compute_accuracy(actual_values, predicted_values_Elman)
 
+# Se combinan los resultados en una sola tabla para series sin trasnformar
+accuracy_table_sinTrans <- bind_rows(
+  tibble(Model = "Holt-Winters", hw_accuracy),
+  tibble(Model = "ARIMA", arima_accuracy_sinTrans),
+  tibble(Model = "Prophet", prophet_accuracy_sinTrans),
+  tibble(Model = "Elman", elman_accuracy)
+)
+
+# Se imprime la tabla incluyendo el modelo de Elman
+print(accuracy_table_sinTrans)
+```
 
