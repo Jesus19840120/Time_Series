@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Page not found | Análisis de Series de Tiempo de Homicidios en colombia</title>
-  <meta name="description" content="Page not found | Análisis de Series de Tiempo de Homicidios en colombia" />
+  <title>2 Análisis exploratorio | Análisis de Series de Tiempo de Homicidios en colombia</title>
+  <meta name="description" content="2 Análisis exploratorio | Análisis de Series de Tiempo de Homicidios en colombia" />
   <meta name="generator" content="bookdown 0.39 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Page not found | Análisis de Series de Tiempo de Homicidios en colombia" />
+  <meta property="og:title" content="2 Análisis exploratorio | Análisis de Series de Tiempo de Homicidios en colombia" />
   <meta property="og:type" content="book" />
   
   
-  
+  <meta name="github-repo" content="Jesus19840120/Time_Series" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Page not found | Análisis de Series de Tiempo de Homicidios en colombia" />
+  <meta name="twitter:title" content="2 Análisis exploratorio | Análisis de Series de Tiempo de Homicidios en colombia" />
   
   
   
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-
-
+<link rel="prev" href="index.html"/>
+<link rel="next" href="creacion-y-exproracion-de-serie-de-tiempo.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -229,19 +229,64 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="page-not-found" class="section level1">
-<h1>Page not found</h1>
-<p>The page you requested cannot be found (perhaps it was moved or renamed).</p>
-<p>You may want to try searching to find the page's new location, or use
-the table of contents to find the page you are looking for.</p>
+<div id="análisis-exploratorio" class="section level1 hasAnchor" number="2">
+<h1><span class="header-section-number">2</span> Análisis exploratorio<a href="análisis-exploratorio.html#análisis-exploratorio" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="dimensiones" class="section level3 hasAnchor" number="2.0.1">
+<h3><span class="header-section-number">2.0.1</span> <em>Dimensiones</em><a href="análisis-exploratorio.html#dimensiones" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Se realiza la exploracion de las dimensiones de la base de datos evidenciando que esta cuenta con:</p>
+<p><strong>Filas:</strong> 75152 <strong>Columnas:</strong> 9</p>
+</div>
+<div id="tipo-de-variables" class="section level3 hasAnchor" number="2.0.2">
+<h3><span class="header-section-number">2.0.2</span> <em>Tipo de variables</em><a href="análisis-exploratorio.html#tipo-de-variables" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Se debe corrigir el tipo de las columnas <strong>FECHA HECHO</strong> y <strong>CANTIDAD</strong>, dado a que éstas son de tipo <strong>Date</strong> y <strong>Número</strong>, luego de aplicar los cambios se observa:</p>
+<ul>
+<li><strong>CANTIDAD:</strong> La variable es tipo numeric</li>
+<li><strong>FECHA HECHO:</strong> La variable es tipo Date</li>
+</ul>
+</div>
+<div id="identificación-de-registros-vacíos" class="section level3 hasAnchor" number="2.0.3">
+<h3><span class="header-section-number">2.0.3</span> <em>Identificación de registros vacíos</em><a href="análisis-exploratorio.html#identificación-de-registros-vacíos" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Se realiza la verificacion de valores nulos o vacios obteniendo los siguientes resultados:</p>
+<pre><code>##         DEPARTAMENTO            MUNICIPIO          CODIGO DANE 
+##                    0                    0                    0 
+##         ARMAS MEDIOS          FECHA HECHO               GENERO 
+##                    0                    0                    0 
+##         GRUPO ETARÍO DESCRIPCIÓN CONDUCTA             CANTIDAD 
+##                    0                    0                    0</code></pre>
+<p>Clara mente se observa que no existen valos nulos o vacios en ninguna de las variables.</p>
+</div>
+<div id="identificación-de-registros-vacíos-con-mice" class="section level3 hasAnchor" number="2.0.4">
+<h3><span class="header-section-number">2.0.4</span> <em>Identificación de registros vacíos con MICE</em><a href="análisis-exploratorio.html#identificación-de-registros-vacíos-con-mice" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Se realiza la verificacion de valores nulos o vacios obteniendo los siguientes resultados:</p>
+<pre><code>##  /\     /\
+## {  `---&#39;  }
+## {  O   O  }
+## ==&gt;  V &lt;==  No need for mice. This data set is completely observed.
+##  \  \|/  /
+##   `-----&#39;</code></pre>
+<pre><code>##       DEPARTAMENTO MUNICIPIO CODIGO DANE ARMAS MEDIOS FECHA HECHO GENERO
+## 75152            1         1           1            1           1      1
+##                  0         0           0            0           0      0
+##       GRUPO ETARÍO DESCRIPCIÓN CONDUCTA CANTIDAD  
+## 75152            1                    1        1 0
+##                  0                    0        0 0</code></pre>
+<p><img src="_main_files/figure-html/unnamed-chunk-6-1.png" alt="2" width="1152" style="display: block; margin: auto;" /></p>
+<p>Clara mente se observa que no existen valores nulos o vacios en ninguna de las variables.</p>
+</div>
+<div id="resumen-de-estadisticos" class="section level3 hasAnchor" number="2.0.5">
+<h3><span class="header-section-number">2.0.5</span> - <em>Resumen de Estadisticos</em><a href="análisis-exploratorio.html#resumen-de-estadisticos" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>A continuacion se muestra un resumen de los estadisticos basicos de nuestra variable <strong>CANTIDAD</strong>:</p>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   1.000   1.105   1.000  16.000</code></pre>
+</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-
-
+<a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="creacion-y-exproracion-de-serie-de-tiempo.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

@@ -5,7 +5,7 @@ date: ' *`r Sys.Date()`*'
 site: bookdown::bookdown_site
 documentClass: book
 link-citation: yes
-github-repo: Jesus19840120/Time_Series
+github-repo: null
 ---
 
 ```{r setup, include=FALSE}

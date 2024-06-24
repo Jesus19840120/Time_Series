@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Page not found | Análisis de Series de Tiempo de Homicidios en colombia</title>
-  <meta name="description" content="Page not found | Análisis de Series de Tiempo de Homicidios en colombia" />
+  <title>4 Implementacion de Transformaciones en la Serie de tiempo | Análisis de Series de Tiempo de Homicidios en colombia</title>
+  <meta name="description" content="4 Implementacion de Transformaciones en la Serie de tiempo | Análisis de Series de Tiempo de Homicidios en colombia" />
   <meta name="generator" content="bookdown 0.39 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Page not found | Análisis de Series de Tiempo de Homicidios en colombia" />
+  <meta property="og:title" content="4 Implementacion de Transformaciones en la Serie de tiempo | Análisis de Series de Tiempo de Homicidios en colombia" />
   <meta property="og:type" content="book" />
   
   
-  
+  <meta name="github-repo" content="Jesus19840120/Time_Series" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Page not found | Análisis de Series de Tiempo de Homicidios en colombia" />
+  <meta name="twitter:title" content="4 Implementacion de Transformaciones en la Serie de tiempo | Análisis de Series de Tiempo de Homicidios en colombia" />
   
   
   
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-
-
+<link rel="prev" href="creacion-y-exproracion-de-serie-de-tiempo.html"/>
+<link rel="next" href="aplicacion-de-modelos.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -229,19 +229,55 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="page-not-found" class="section level1">
-<h1>Page not found</h1>
-<p>The page you requested cannot be found (perhaps it was moved or renamed).</p>
-<p>You may want to try searching to find the page's new location, or use
-the table of contents to find the page you are looking for.</p>
+<div id="implementacion-de-transformaciones-en-la-serie-de-tiempo" class="section level1 hasAnchor" number="4">
+<h1><span class="header-section-number">4</span> Implementacion de Transformaciones en la Serie de tiempo<a href="implementacion-de-transformaciones-en-la-serie-de-tiempo.html#implementacion-de-transformaciones-en-la-serie-de-tiempo" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>En este capitulo exploraremos diferentes tecnicas de transformacion que nos permitiran preparar nuestra serie de tiempo para aplicar los modelos requeridos para realizar las predicciones deseadas, dentro de las trnasformaciones que abordaremos estan: </p>
+<ol style="list-style-type: decimal">
+<li><p><strong>Transformacion Logaritmica</strong> </p></li>
+<li><p><strong>Diferenciacion</strong></p></li>
+</ol>
+<p>Iniciaremos evaluando cuantas diferenciaciones son necesarias para lograr estacionaridad en nuestra serie de tiempo.</p>
+<div id="diferenciación" class="section level3 hasAnchor" number="4.0.1">
+<h3><span class="header-section-number">4.0.1</span> - <em>Diferenciación</em><a href="implementacion-de-transformaciones-en-la-serie-de-tiempo.html#diferenciación" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Dado a que en los modelos de series de tiempo se requiere tener en cuenta la estacionaridad, para una mejor modelización y capacidad predictiva, se procede a obtener las diferencias necesarias para lograr el cumplimiento de este supuesto.</p>
+<p><strong>¿Cuántas diferencias se necesitan para hallar estacionariedad?</strong></p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="implementacion-de-transformaciones-en-la-serie-de-tiempo.html#cb7-1" tabindex="-1"></a>Diferencias<span class="ot">=</span><span class="fu">ndiffs</span>(Data_ts<span class="sc">$</span>homicidios)</span></code></pre></div>
+<p>Despues de realizar el procedimiento de diferenciacion se llega a la conclusion que se solo se requieren <strong>1</strong> diferencias para lograr la estacionariedad requerida para el modelamiento.</p>
+</div>
+<div id="transformación-logaritmica" class="section level3 hasAnchor" number="4.0.2">
+<h3><span class="header-section-number">4.0.2</span> - <em>Transformación Logaritmica</em><a href="implementacion-de-transformaciones-en-la-serie-de-tiempo.html#transformación-logaritmica" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>La transformacion logaritmica permite eliminar la tendencia de serie de tiempo, esto con el objetivo de estabilizar el comportamiento de la serie y que esta no se vea afectada por este componente durante el modelamiento y la prediccion, cabe resaltar que estas transformaciones, en muchos casos deben ser revertidas, como por ejemplo al realizar validaciones cruzadas entre modelos para poder tener valores en la misma escala.</p>
+<p><img src="_main_files/figure-html/unnamed-chunk-19-1.png" width="672" style="display: block; margin: auto;" /><img src="_main_files/figure-html/unnamed-chunk-19-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Luego de aplicar la transformacion logaritmica a la serie de tiempo, se observa como se minimizan las diferencias en la serie, presentandonos una grafica con valores mas estables, esto nos ayuda a cumplir con el supuesto de que la serie tenga una variabilidad constante.</p>
+<p>teniendo en cuenta que la serie no es estacionaria se debe continuar con la plicacion de la diferenciacion sugerida por la prueba <strong>Dicker - Fuller</strong> para lograr una serie que cumpla las condiciones para su correcto modelamiento y predicciones.</p>
+</div>
+<div id="aplicación-de-diferenciación" class="section level3 hasAnchor" number="4.0.3">
+<h3><span class="header-section-number">4.0.3</span> - <em>Aplicación de Diferenciación</em><a href="implementacion-de-transformaciones-en-la-serie-de-tiempo.html#aplicación-de-diferenciación" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Luego de haber aplicado la transformacion logaritmica procederemos con la implementacion de la diferenciacion, para realizar este procedimiento nos apoyaremos en la funcion <strong>diff</strong>.</p>
+<p><img src="_main_files/figure-html/unnamed-chunk-20-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Tal y como se observa en la grafica, la diferenciacion nos ha permitido tener una serie mucho mas estable eliminando las variaciones extremas para tener datos mas uniformes. </p>
+<p><strong>NOTA:</strong> esta transformacion debera ser revertida en futuros pasos para devolver los valores de la prediccion a las escalas originales</p>
+</div>
+<div id="aplicación-de-función-acf" class="section level3 hasAnchor" number="4.0.4">
+<h3><span class="header-section-number">4.0.4</span> - <em>Aplicación de función ACF</em><a href="implementacion-de-transformaciones-en-la-serie-de-tiempo.html#aplicación-de-función-acf" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Como parte de la exploracion de la serie transformada se realiza la verificacion de las correlaciones luego de las transformaciones para comprobar la estacionaridad de la serie transformada</p>
+<p><img src="_main_files/figure-html/unnamed-chunk-21-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>El realizar la autocorrelacion nos permite identificar un comportamiento estacionario con respecto al los resagos de tiempo en la serie.</p>
+</div>
+<div id="aplicación-de-función-pacf" class="section level3 hasAnchor" number="4.0.5">
+<h3><span class="header-section-number">4.0.5</span> - <em>Aplicación de función PACF</em><a href="implementacion-de-transformaciones-en-la-serie-de-tiempo.html#aplicación-de-función-pacf" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>al igual que el analisis de autocorrelacion <strong>ACF</strong> el analisis de autocorrelacion parcial <strong>PACF</strong> nos permite evaluar la autoregresividad de la serie de tiempo.</p>
+<p><img src="_main_files/figure-html/unnamed-chunk-22-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Al identificar la estructura autorregresiva en la serie, se tiene que, se necesitan 3 rezagos para predecir el valor actual de la serie.</p>
+</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-
-
+<a href="creacion-y-exproracion-de-serie-de-tiempo.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="aplicacion-de-modelos.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
