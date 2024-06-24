@@ -23,7 +23,7 @@
 <meta name="author" content="Andrés Barrios | Jesus Gallardo | Luis Tafur" />
 
 
-<meta name="date" content="2024-06-23" />
+<meta name="date" content="2024-06-24" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -31,7 +31,7 @@
   
   
 <link rel="prev" href="implementacion-de-transformaciones-en-la-serie-de-tiempo.html"/>
-
+<link rel="next" href="redes-neuronales-elman-y-jordan.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -197,11 +197,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="5.3.8" data-path="aplicacion-de-modelos.html"><a href="aplicacion-de-modelos.html#valores-originales"><i class="fa fa-check"></i><b>5.3.8</b> - Valores Originales</a></li>
 <li class="chapter" data-level="5.3.9" data-path="aplicacion-de-modelos.html"><a href="aplicacion-de-modelos.html#estimacion-de-metricas-de-modelo"><i class="fa fa-check"></i><b>5.3.9</b> - Estimacion de Metricas de Modelo</a></li>
 </ul></li>
-<li class="chapter" data-level="5.4" data-path="aplicacion-de-modelos.html"><a href="aplicacion-de-modelos.html#redes-neuronales-elman-y-jordan"><i class="fa fa-check"></i><b>5.4</b> Redes Neuronales ELMAN y JORDAN</a>
-<ul>
-<li class="chapter" data-level="5.4.1" data-path="aplicacion-de-modelos.html"><a href="aplicacion-de-modelos.html#entrenamiento-del-modelo"><i class="fa fa-check"></i><b>5.4.1</b> - Entrenamiento del Modelo</a></li>
 </ul></li>
-<li class="chapter" data-level="5.5" data-path="aplicacion-de-modelos.html"><a href="aplicacion-de-modelos.html#implementacion-modelo-de-jordan"><i class="fa fa-check"></i><b>5.5</b> Implementacion Modelo de Jordan</a></li>
+<li class="chapter" data-level="6" data-path="redes-neuronales-elman-y-jordan.html"><a href="redes-neuronales-elman-y-jordan.html"><i class="fa fa-check"></i><b>6</b> Redes Neuronales ELMAN y JORDAN</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="redes-neuronales-elman-y-jordan.html"><a href="redes-neuronales-elman-y-jordan.html#implementacion-modelo-elman"><i class="fa fa-check"></i><b>6.1</b> Implementacion Modelo Elman</a>
+<ul>
+<li class="chapter" data-level="6.1.1" data-path="redes-neuronales-elman-y-jordan.html"><a href="redes-neuronales-elman-y-jordan.html#entrenamiento-del-modelo"><i class="fa fa-check"></i><b>6.1.1</b> - Entrenamiento del Modelo</a></li>
+<li class="chapter" data-level="6.1.2" data-path="redes-neuronales-elman-y-jordan.html"><a href="redes-neuronales-elman-y-jordan.html#evolucion-de-error-elman"><i class="fa fa-check"></i><b>6.1.2</b> - Evolucion de Error Elman</a></li>
+<li class="chapter" data-level="6.1.3" data-path="redes-neuronales-elman-y-jordan.html"><a href="redes-neuronales-elman-y-jordan.html#metricas-modelo-elman"><i class="fa fa-check"></i><b>6.1.3</b> - Metricas Modelo Elman</a></li>
+</ul></li>
+<li class="chapter" data-level="6.2" data-path="redes-neuronales-elman-y-jordan.html"><a href="redes-neuronales-elman-y-jordan.html#implementacion-modelo-de-jordan"><i class="fa fa-check"></i><b>6.2</b> Implementacion Modelo de Jordan</a>
+<ul>
+<li class="chapter" data-level="6.2.1" data-path="redes-neuronales-elman-y-jordan.html"><a href="redes-neuronales-elman-y-jordan.html#evolucion-de-errores-jordan"><i class="fa fa-check"></i><b>6.2.1</b> - Evolucion de Errores Jordan</a></li>
+<li class="chapter" data-level="6.2.2" data-path="redes-neuronales-elman-y-jordan.html"><a href="redes-neuronales-elman-y-jordan.html#metricas-modelo-jordan"><i class="fa fa-check"></i><b>6.2.2</b> - Metricas Modelo Jordan</a></li>
+</ul></li>
 </ul></li>
 </ul>
 
@@ -455,72 +464,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 meses. Teniendo en consideración los resultados obtenidos de las predicciones con los modelos ARIMA y Prophet usando la serie de tiempo original, se puede concluir a partir de la métrica RMSE que el mejor modelo para realizar predicciones a largo plazo (12 meses) fue el modelo <strong>ARIMA</strong> y para los periodos de evaluación de 6 y 3 meses, el modelo con mejores resultados fue el Prophet.</p>
 </div>
 </div>
-<div id="redes-neuronales-elman-y-jordan" class="section level2 hasAnchor" number="5.4">
-<h2><span class="header-section-number">5.4</span> Redes Neuronales ELMAN y JORDAN<a href="aplicacion-de-modelos.html#redes-neuronales-elman-y-jordan" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Se crean pares de entradas y salidas para aprendizaje supervisado, asumiendo 24 meses para predecir el siguiente mes.</p>
-<div id="entrenamiento-del-modelo" class="section level3 hasAnchor" number="5.4.1">
-<h3><span class="header-section-number">5.4.1</span> - Entrenamiento del Modelo<a href="aplicacion-de-modelos.html#entrenamiento-del-modelo" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>Se entrena el modelo con las siguientes caracteristicas:</p>
-<ul>
-<li><strong>Tasa de Aprendizaje:</strong> 0.1</li>
-<li><strong>Número Máximo de Iteraciones:</strong> 5000</li>
-</ul>
-<p>Se usa función plotIterativeError para ver evolución del error de la red a lo largo de las iteraciones de entrenamiento</p>
-<p><img src="_main_files/figure-html/unnamed-chunk-60-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>En el grafico se puede observar como el error no converge a cero rápidamente lo que es una indicacion de que el ajuste del modelo es debil.</p>
-<pre><code>## # A tibble: 4 × 9
-##   Model           ME  RMSE   MAE    MPE  MAPE  MASE RMSSE  ACF1
-##   &lt;chr&gt;        &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
-## 1 Holt-Winters  346.  482.  346.  56.2   56.2  2.09  1.56 0.478
-## 2 ARIMA         252.  406.  318.  44.0   49.3  1.92  1.31 0.480
-## 3 Prophet      -119.  349.  327.  -1.27  35.4  1.97  1.13 0.463
-## 4 Elman         638. 1028.  886. 102.   122.   5.35  3.32 0.433</code></pre>
-</div>
-</div>
-<div id="implementacion-modelo-de-jordan" class="section level2 hasAnchor" number="5.5">
-<h2><span class="header-section-number">5.5</span> Implementacion Modelo de Jordan<a href="aplicacion-de-modelos.html#implementacion-modelo-de-jordan" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="aplicacion-de-modelos.html#cb20-1" tabindex="-1"></a><span class="co"># Se entrena el modelo de Jordan</span></span>
-<span id="cb20-2"><a href="aplicacion-de-modelos.html#cb20-2" tabindex="-1"></a>modelJordan <span class="ot">&lt;-</span> <span class="fu">jordan</span>(train_inputs, train_outputs, <span class="at">size =</span> <span class="dv">12</span>, <span class="at">learnFuncParams =</span> <span class="fu">c</span>(<span class="fl">0.1</span>), <span class="at">maxit =</span> <span class="dv">5000</span>, <span class="at">linOut =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="aplicacion-de-modelos.html#cb21-1" tabindex="-1"></a><span class="co"># Se realizan las predicciones con el modelo de Jordan</span></span>
-<span id="cb21-2"><a href="aplicacion-de-modelos.html#cb21-2" tabindex="-1"></a>predictionsJordan <span class="ot">&lt;-</span> <span class="fu">predict</span>(modelJordan, test_inputs)</span>
-<span id="cb21-3"><a href="aplicacion-de-modelos.html#cb21-3" tabindex="-1"></a></span>
-<span id="cb21-4"><a href="aplicacion-de-modelos.html#cb21-4" tabindex="-1"></a><span class="co"># Se denormalizan las predicciones para evaluar con los datos reales</span></span>
-<span id="cb21-5"><a href="aplicacion-de-modelos.html#cb21-5" tabindex="-1"></a>predicted_values_Jordan <span class="ot">&lt;-</span> <span class="fu">denormalize</span>(predictionsJordan, min_val, max_val)</span></code></pre></div>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="aplicacion-de-modelos.html#cb22-1" tabindex="-1"></a><span class="co"># Se estiman las métricas para el modelo de Jordan</span></span>
-<span id="cb22-2"><a href="aplicacion-de-modelos.html#cb22-2" tabindex="-1"></a>jordan_accuracy <span class="ot">&lt;-</span> <span class="fu">compute_accuracy</span>(actual_values, predicted_values_Jordan)</span>
-<span id="cb22-3"><a href="aplicacion-de-modelos.html#cb22-3" tabindex="-1"></a></span>
-<span id="cb22-4"><a href="aplicacion-de-modelos.html#cb22-4" tabindex="-1"></a><span class="co"># Se combinan los resultados en una sola tabla para todos los modelos</span></span>
-<span id="cb22-5"><a href="aplicacion-de-modelos.html#cb22-5" tabindex="-1"></a>accuracy_table_todos <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(</span>
-<span id="cb22-6"><a href="aplicacion-de-modelos.html#cb22-6" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">Model =</span> <span class="st">&quot;Holt-Winters&quot;</span>, hw_accuracy),</span>
-<span id="cb22-7"><a href="aplicacion-de-modelos.html#cb22-7" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">Model =</span> <span class="st">&quot;ARIMA&quot;</span>, arima_accuracy_sinTrans),</span>
-<span id="cb22-8"><a href="aplicacion-de-modelos.html#cb22-8" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">Model =</span> <span class="st">&quot;Prophet&quot;</span>, prophet_accuracy_sinTrans),</span>
-<span id="cb22-9"><a href="aplicacion-de-modelos.html#cb22-9" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">Model =</span> <span class="st">&quot;Elman&quot;</span>, elman_accuracy),</span>
-<span id="cb22-10"><a href="aplicacion-de-modelos.html#cb22-10" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">Model =</span> <span class="st">&quot;Jordan&quot;</span>, jordan_accuracy)</span>
-<span id="cb22-11"><a href="aplicacion-de-modelos.html#cb22-11" tabindex="-1"></a>)</span>
-<span id="cb22-12"><a href="aplicacion-de-modelos.html#cb22-12" tabindex="-1"></a></span>
-<span id="cb22-13"><a href="aplicacion-de-modelos.html#cb22-13" tabindex="-1"></a><span class="co"># Se imprime la tabla incluyendo el modelo de Elman</span></span>
-<span id="cb22-14"><a href="aplicacion-de-modelos.html#cb22-14" tabindex="-1"></a><span class="fu">print</span>(accuracy_table_todos)</span></code></pre></div>
-<pre><code>## # A tibble: 5 × 9
-##   Model           ME  RMSE   MAE    MPE  MAPE  MASE RMSSE  ACF1
-##   &lt;chr&gt;        &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
-## 1 Holt-Winters  346.  482.  346.  56.2   56.2  2.09  1.56 0.478
-## 2 ARIMA         252.  406.  318.  44.0   49.3  1.92  1.31 0.480
-## 3 Prophet      -119.  349.  327.  -1.27  35.4  1.97  1.13 0.463
-## 4 Elman         638. 1028.  886. 102.   122.   5.35  3.32 0.433
-## 5 Jordan        434.  745.  637.  63.1   80.3  3.84  2.40 0.189</code></pre>
-<p>De todos los modelos implementados, el que arrojó mejores resultados considerando las métricas de evaluación obtenidas para la predicción de los últimos 6 meses fue el modelo Prophet, esto considerando todas las métricas en general, pero especificamente con el RMSE que da una métrica en la escala original de los datos. </p>
-<p>De los modelos de redes neuronales el que mostró mejor comportamiento fue el modelo Elman, el cual tuvo un RMSE inferior al modelo de Jordan, pero superior al de los otros modelos. Esto indica que las redes neuronales no pudieron predecir de manera correcta la componenete de estacionalidad de la serie de tiempo.
-Como conclusión final, se considera que la escogencia del modelo para realizar predicciones en una serie de tiempo debe considerar las características propias de la serie, como son su tendencia, pero en especial su estacionalidad. En el ejercicio de escogencia se recomienda utilizar diferentes periodos de entrenamiento y evaluación, así como modificar las variables de ajsute de los modelos según las características de los componentes de la serie de tiempo”</p>
-
-</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-<a href="implementacion-de-transformaciones-en-la-serie-de-tiempo.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-
+<a href="implementacion-de-transformaciones-en-la-serie-de-tiempo.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="redes-neuronales-elman-y-jordan.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

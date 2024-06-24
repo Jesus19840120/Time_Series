@@ -917,7 +917,9 @@ De los resultados obtenidos se evidencia en primera medida que para los modelos 
 meses. Teniendo en consideración los resultados obtenidos de las predicciones con los modelos ARIMA y Prophet usando la serie de tiempo original, se puede concluir a partir de la métrica RMSE que el mejor modelo para realizar predicciones a largo plazo (12 meses) fue el modelo **ARIMA** y para los periodos de evaluación de 6 y 3 meses, el modelo con mejores resultados fue el Prophet. 
 
 
-## Redes Neuronales ELMAN y JORDAN
+# Redes Neuronales ELMAN y JORDAN
+
+## Implementacion Modelo Elman
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
 
@@ -962,6 +964,8 @@ Se entrena el modelo con las siguientes caracteristicas:
 - **Tasa de Aprendizaje:** 0.1\n
 - **Número Máximo de Iteraciones:** 5000
 
+### - Evolucion de Error Elman
+
 Se usa  función plotIterativeError para ver evolución del error de la red a lo largo de las iteraciones de entrenamiento
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
@@ -987,6 +991,8 @@ predicted_values_Elman <- denormalize(predictionsElman, min_val, max_val)
 ```
 
 
+### - Metricas Modelo Elman
+
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
 # Se estiman las métricas para el modelo de Elman
 elman_accuracy <- compute_accuracy(actual_values, predicted_values_Elman)
@@ -1011,6 +1017,14 @@ print(accuracy_table_sinTrans)
 modelJordan <- jordan(train_inputs, train_outputs, size = 12, learnFuncParams = c(0.1), maxit = 5000, linOut = TRUE)
 ```
 
+### - Evolucion de Errores Jordan
+
+```{r}
+plotIterativeError(modelJordan)
+
+```
+
+
 
 ```{r}
 # Se realizan las predicciones con el modelo de Jordan
@@ -1020,6 +1034,8 @@ predictionsJordan <- predict(modelJordan, test_inputs)
 predicted_values_Jordan <- denormalize(predictionsJordan, min_val, max_val)
 
 ```
+
+### - Metricas Modelo Jordan
 
 ```{r}
 # Se estiman las métricas para el modelo de Jordan

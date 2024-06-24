@@ -51,3 +51,8 @@ prediccion-auto-arima
 implementacion-de-modelo-prophet
 prediccion-prophet
 implementacion-modelo-de-jordan
+implementacion-modelo-elman
+evolucion-de-error-elman
+metricas-modelo-elman
+evolucion-de-errores-jordan
+metricas-modelo-jordan
