@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>5 Aplicacion de Modelos | Análisis de Series de Tiempo de Homicidios en colombia</title>
+  <meta name="description" content="5 Aplicacion de Modelos | Análisis de Series de Tiempo de Homicidios en colombia" />
+  <meta name="generator" content="bookdown 0.39 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="5 Aplicacion de Modelos | Análisis de Series de Tiempo de Homicidios en colombia" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="5 Aplicacion de Modelos | Análisis de Series de Tiempo de Homicidios en colombia" />
+  
+  
+  
+
+<meta name="author" content="Andrés Barrios | Jesus Gallardo | Luis Tafur" />
+
+
+<meta name="date" content="2024-06-23" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="implementacion-de-transformaciones-en-la-serie-de-tiempo.html"/>
+
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+<link href="libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<script src="libs/plotly-binding-4.10.4/plotly.js"></script>
+<script src="libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="libs/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
+<link href="libs/plotly-htmlwidgets-css-2.11.1/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="libs/plotly-main-2.11.1/plotly-latest.min.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> <strong>Chapter 1 Descripción</strong></a></li>
+<li class="chapter" data-level="2" data-path="análisis-exploratorio.html"><a href="análisis-exploratorio.html"><i class="fa fa-check"></i><b>2</b> Análisis exploratorio</a>
+<ul>
+<li class="chapter" data-level="2.0.1" data-path="análisis-exploratorio.html"><a href="análisis-exploratorio.html#dimensiones"><i class="fa fa-check"></i><b>2.0.1</b> <em>Dimensiones</em></a></li>
+<li class="chapter" data-level="2.0.2" data-path="análisis-exploratorio.html"><a href="análisis-exploratorio.html#tipo-de-variables"><i class="fa fa-check"></i><b>2.0.2</b> <em>Tipo de variables</em></a></li>
+<li class="chapter" data-level="2.0.3" data-path="análisis-exploratorio.html"><a href="análisis-exploratorio.html#identificación-de-registros-vacíos"><i class="fa fa-check"></i><b>2.0.3</b> <em>Identificación de registros vacíos</em></a></li>
+<li class="chapter" data-level="2.0.4" data-path="análisis-exploratorio.html"><a href="análisis-exploratorio.html#identificación-de-registros-vacíos-con-mice"><i class="fa fa-check"></i><b>2.0.4</b> <em>Identificación de registros vacíos con MICE</em></a></li>
+<li class="chapter" data-level="2.0.5" data-path="análisis-exploratorio.html"><a href="análisis-exploratorio.html#resumen-de-estadisticos"><i class="fa fa-check"></i><b>2.0.5</b> - <em>Resumen de Estadisticos</em></a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="creacion-y-exproracion-de-serie-de-tiempo.html"><a href="creacion-y-exproracion-de-serie-de-tiempo.html"><i class="fa fa-check"></i><b>3</b> - <em>Creacion y Exproracion de Serie de Tiempo</em></a>
+<ul>
+<li class="chapter" data-level="3.0.1" data-path="creacion-y-exproracion-de-serie-de-tiempo.html"><a href="creacion-y-exproracion-de-serie-de-tiempo.html#visualizacion-de-ts"><i class="fa fa-check"></i><b>3.0.1</b> - <em>Visualizacion de TS</em></a></li>
+<li class="chapter" data-level="3.0.2" data-path="creacion-y-exproracion-de-serie-de-tiempo.html"><a href="creacion-y-exproracion-de-serie-de-tiempo.html#analisis-por-ciclos"><i class="fa fa-check"></i><b>3.0.2</b> - <em>Analisis por Ciclos</em></a></li>
+<li class="chapter" data-level="3.0.3" data-path="creacion-y-exproracion-de-serie-de-tiempo.html"><a href="creacion-y-exproracion-de-serie-de-tiempo.html#identificacion-de-estacionalidades-en-los-resagos"><i class="fa fa-check"></i><b>3.0.3</b> - *Identificacion de estacionalidades en los resagos</a></li>
+<li class="chapter" data-level="3.0.4" data-path="creacion-y-exproracion-de-serie-de-tiempo.html"><a href="creacion-y-exproracion-de-serie-de-tiempo.html#media-movil"><i class="fa fa-check"></i><b>3.0.4</b> - <em>Media Movil</em></a></li>
+<li class="chapter" data-level="3.0.5" data-path="creacion-y-exproracion-de-serie-de-tiempo.html"><a href="creacion-y-exproracion-de-serie-de-tiempo.html#componentes-de-las-series-temporales"><i class="fa fa-check"></i><b>3.0.5</b> - <strong>Componentes de las Series Temporales</strong></a></li>
+<li class="chapter" data-level="3.0.6" data-path="creacion-y-exproracion-de-serie-de-tiempo.html"><a href="creacion-y-exproracion-de-serie-de-tiempo.html#identificación-de-estacionaridad-dicker---fuller"><i class="fa fa-check"></i><b>3.0.6</b> - <em>Identificación de Estacionaridad Dicker - Fuller</em></a></li>
+<li class="chapter" data-level="3.0.7" data-path="creacion-y-exproracion-de-serie-de-tiempo.html"><a href="creacion-y-exproracion-de-serie-de-tiempo.html#estacionalidad-por-año"><i class="fa fa-check"></i><b>3.0.7</b> - <em>Estacionalidad por año</em></a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="implementacion-de-transformaciones-en-la-serie-de-tiempo.html"><a href="implementacion-de-transformaciones-en-la-serie-de-tiempo.html"><i class="fa fa-check"></i><b>4</b> Implementacion de Transformaciones en la Serie de tiempo</a>
+<ul>
+<li class="chapter" data-level="4.0.1" data-path="implementacion-de-transformaciones-en-la-serie-de-tiempo.html"><a href="implementacion-de-transformaciones-en-la-serie-de-tiempo.html#diferenciación"><i class="fa fa-check"></i><b>4.0.1</b> - <em>Diferenciación</em></a></li>
+<li class="chapter" data-level="4.0.2" data-path="implementacion-de-transformaciones-en-la-serie-de-tiempo.html"><a href="implementacion-de-transformaciones-en-la-serie-de-tiempo.html#transformación-logaritmica"><i class="fa fa-check"></i><b>4.0.2</b> - <em>Transformación Logaritmica</em></a></li>
+<li class="chapter" data-level="4.0.3" data-path="implementacion-de-transformaciones-en-la-serie-de-tiempo.html"><a href="implementacion-de-transformaciones-en-la-serie-de-tiempo.html#aplicación-de-diferenciación"><i class="fa fa-check"></i><b>4.0.3</b> - <em>Aplicación de Diferenciación</em></a></li>
+<li class="chapter" data-level="4.0.4" data-path="implementacion-de-transformaciones-en-la-serie-de-tiempo.html"><a href="implementacion-de-transformaciones-en-la-serie-de-tiempo.html#aplicación-de-función-acf"><i class="fa fa-check"></i><b>4.0.4</b> - <em>Aplicación de función ACF</em></a></li>
+<li class="chapter" data-level="4.0.5" data-path="implementacion-de-transformaciones-en-la-serie-de-tiempo.html"><a href="implementacion-de-transformaciones-en-la-serie-de-tiempo.html#aplicación-de-función-pacf"><i class="fa fa-check"></i><b>4.0.5</b> - <em>Aplicación de función PACF</em></a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="aplicacion-de-modelos.html"><a href="aplicacion-de-modelos.html"><i class="fa fa-check"></i><b>5</b> Aplicacion de Modelos</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="aplicacion-de-modelos.html"><a href="aplicacion-de-modelos.html#aplicación-de-holt-winters-model."><i class="fa fa-check"></i><b>5.1</b> Aplicación de Holt-Winters Model.</a>
+<ul>
+<li class="chapter" data-level="5.1.1" data-path="aplicacion-de-modelos.html"><a href="aplicacion-de-modelos.html#holt-winters-multiplicativo"><i class="fa fa-check"></i><b>5.1.1</b> - Holt-Winters Multiplicativo</a></li>
+<li class="chapter" data-level="5.1.2" data-path="aplicacion-de-modelos.html"><a href="aplicacion-de-modelos.html#prediccion-holt-winters"><i class="fa fa-check"></i><b>5.1.2</b> - Prediccion Holt-Winters</a></li>
+<li class="chapter" data-level="5.1.3" data-path="aplicacion-de-modelos.html"><a href="aplicacion-de-modelos.html#forcast-evaluation"><i class="fa fa-check"></i><b>5.1.3</b> - Forcast evaluation</a></li>
+<li class="chapter" data-level="5.1.4" data-path="aplicacion-de-modelos.html"><a href="aplicacion-de-modelos.html#testeo-de-errores"><i class="fa fa-check"></i><b>5.1.4</b> - Testeo de errores</a></li>
+<li class="chapter" data-level="5.1.5" data-path="aplicacion-de-modelos.html"><a href="aplicacion-de-modelos.html#modelaje-box---jenkins"><i class="fa fa-check"></i><b>5.1.5</b> - Modelaje Box - Jenkins</a></li>
+</ul></li>
+<li class="chapter" data-level="5.2" data-path="aplicacion-de-modelos.html"><a href="aplicacion-de-modelos.html#implementacion-de-modelo-auto-arima"><i class="fa fa-check"></i><b>5.2</b> Implementacion de Modelo Auto-Arima</a>
+<ul>
+<li class="chapter" data-level="5.2.1" data-path="aplicacion-de-modelos.html"><a href="aplicacion-de-modelos.html#prediccion-auto-arima"><i class="fa fa-check"></i><b>5.2.1</b> - Prediccion Auto-Arima</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="aplicacion-de-modelos.html"><a href="aplicacion-de-modelos.html#implementacion-de-modelo-prophet"><i class="fa fa-check"></i><b>5.3</b> Implementacion de Modelo Prophet</a>
+<ul>
+<li class="chapter" data-level="5.3.1" data-path="aplicacion-de-modelos.html"><a href="aplicacion-de-modelos.html#prediccion-prophet"><i class="fa fa-check"></i><b>5.3.1</b> - Prediccion Prophet</a></li>
+<li class="chapter" data-level="5.3.2" data-path="aplicacion-de-modelos.html"><a href="aplicacion-de-modelos.html#visualizacion-del-modelo"><i class="fa fa-check"></i><b>5.3.2</b> - Visualizacion del Modelo</a></li>
+<li class="chapter" data-level="5.3.3" data-path="aplicacion-de-modelos.html"><a href="aplicacion-de-modelos.html#componentes-del-modelo"><i class="fa fa-check"></i><b>5.3.3</b> - Componentes del Modelo</a></li>
+<li class="chapter" data-level="5.3.4" data-path="aplicacion-de-modelos.html"><a href="aplicacion-de-modelos.html#comparación-entre-modelos"><i class="fa fa-check"></i><b>5.3.4</b> - Comparación entre modelos</a></li>
+<li class="chapter" data-level="5.3.5" data-path="aplicacion-de-modelos.html"><a href="aplicacion-de-modelos.html#creación-del-modelo-holt-winter-train"><i class="fa fa-check"></i><b>5.3.5</b> - Creación del modelo Holt-Winter Train</a></li>
+<li class="chapter" data-level="5.3.6" data-path="aplicacion-de-modelos.html"><a href="aplicacion-de-modelos.html#creación-del-modelo-autoarima-train"><i class="fa fa-check"></i><b>5.3.6</b> - Creación del modelo AutoArima Train</a></li>
+<li class="chapter" data-level="5.3.7" data-path="aplicacion-de-modelos.html"><a href="aplicacion-de-modelos.html#creación-del-modelo-prophet-train"><i class="fa fa-check"></i><b>5.3.7</b> - Creación del modelo Prophet Train</a></li>
+<li class="chapter" data-level="5.3.8" data-path="aplicacion-de-modelos.html"><a href="aplicacion-de-modelos.html#valores-originales"><i class="fa fa-check"></i><b>5.3.8</b> - Valores Originales</a></li>
+<li class="chapter" data-level="5.3.9" data-path="aplicacion-de-modelos.html"><a href="aplicacion-de-modelos.html#estimacion-de-metricas-de-modelo"><i class="fa fa-check"></i><b>5.3.9</b> - Estimacion de Metricas de Modelo</a></li>
+</ul></li>
+<li class="chapter" data-level="5.4" data-path="aplicacion-de-modelos.html"><a href="aplicacion-de-modelos.html#redes-neuronales-elman-y-jordan"><i class="fa fa-check"></i><b>5.4</b> Redes Neuronales ELMAN y JORDAN</a>
+<ul>
+<li class="chapter" data-level="5.4.1" data-path="aplicacion-de-modelos.html"><a href="aplicacion-de-modelos.html#entrenamiento-del-modelo"><i class="fa fa-check"></i><b>5.4.1</b> - Entrenamiento del Modelo</a></li>
+</ul></li>
+<li class="chapter" data-level="5.5" data-path="aplicacion-de-modelos.html"><a href="aplicacion-de-modelos.html#implementacion-modelo-de-jordan"><i class="fa fa-check"></i><b>5.5</b> Implementacion Modelo de Jordan</a></li>
+</ul></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./"><strong>Análisis de Series de Tiempo de Homicidios en colombia</strong></a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="aplicacion-de-modelos" class="section level1 hasAnchor" number="5">
+<h1><span class="header-section-number">5</span> Aplicacion de Modelos<a href="aplicacion-de-modelos.html#aplicacion-de-modelos" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>A continuacion nos concentraremos en la implementacion de modelos, en esta ocacion aplicaremos diferentes modelos para la prediccion de las series de tiempo, los modelos a aplicar son:</p>
+<ol style="list-style-type: decimal">
+<li><p><strong>Holt-Winters</strong> </p></li>
+<li><p><strong>Auto-Arima</strong> </p></li>
+<li><p><strong>Prophet</strong></p></li>
+</ol>
+<p>Adicionalmente realizaremos un proceso de validacion cruzada para evaluar la precision de los modelos a traves de metricas como:</p>
+<ul>
+<li><strong>ME</strong></li>
+<li><strong>RMSE</strong></li>
+<li><strong>MAE</strong></li>
+<li><strong>MPE</strong></li>
+<li><strong>MAPE</strong></li>
+<li><strong>MASE</strong></li>
+<li><strong>RMSSE</strong></li>
+</ul>
+<div id="aplicación-de-holt-winters-model." class="section level2 hasAnchor" number="5.1">
+<h2><span class="header-section-number">5.1</span> Aplicación de Holt-Winters Model.<a href="aplicacion-de-modelos.html#aplicación-de-holt-winters-model." class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Dada la evidencia de existencia de un valor medio, tendencia y estacionalidad en los datos; se permite la aplicación del modelo Holt-Winters; como modelo predictorio de largo y mediano plazo por medio de un triple suavizado exponencial al tener en cuenta los aspectos mencionados con anterioridad.</p>
+<p>La primera decisión radica en elegir el tipo de patrón de estacionalidad, es decir, si este modelo debería ser representado por una estacionalidad aditiva o multiplicativa. Basándonos en la evidencia previamente encontrada, se observa una tendencia que aumenta o disminuye proporcionalmente con el promedio móvil de los datos, lo que sugiere que no permanece constante. Además, la amplitud de esta estacionalidad varía con el nivel encontrado. Por lo tanto, se decidió que el modelo a escoger será multiplicativo.</p>
+<div id="holt-winters-multiplicativo" class="section level3 hasAnchor" number="5.1.1">
+<h3><span class="header-section-number">5.1.1</span> - Holt-Winters Multiplicativo<a href="aplicacion-de-modelos.html#holt-winters-multiplicativo" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><img src="_main_files/figure-html/unnamed-chunk-23-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>La gráfica nos brinda una visualización del comportamiento de las predicciones generadas por el modelo multiplicativo Holt-Winters. En un primer vistazo, podemos observar un ajuste cercano entre las predicciones y los datos base. Además, se aprecia una tendencia y estacionalidad similar entre ambas.</p>
+<p>Los valores de los parámetro obtenidos son:
+<strong>Alpha:</strong> 0.694986
+<strong>Beta:</strong> 0
+<strong>Gamma:</strong> 0.0054929 </p>
+<p>Al revisar los parámetros usados se puede apreciar que el modelo está dando más peso al parámetro <strong>Alpha</strong> que corresponde a la tendencia.</p>
+<p>Para un mejor ajuste, se probará modificar los parametros <strong>Beta</strong>, <strong>Gamma</strong> y <strong>Alpha</strong> del modelo <strong>holt-winters</strong>, dado a que éstas se asocian respectivamente con tendencia, estacionalidad y nivel (<strong>promedio móvil</strong>).</p>
+<p><strong>Alpha</strong> es un número entre 0 y 1 que determina cuanto peso se le da a las observaciones más recientes al calcular la tendencia.</p>
+<p><strong>Beta</strong> es un número entre 0 y 1 que determina cuanto peso se le da a las observaciones más recientes en cuanto su estacionalidad.</p>
+<p><strong>Gamma</strong> es un número entre 0 y 1 que determina cuanto peso se le da a las observaciones más recientes en cuanto su nivel (promedio móvil).</p>
+<p><img src="_main_files/figure-html/unnamed-chunk-25-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Al modificar dando más peso al parámetro <strong>Gamma</strong> correspondiente al Nivel, se puede apreciar como las estimaciones cambian en magnitud y los picos y valles no coinciden en igual proporción como en el modelo original.</p>
+<p><img src="_main_files/figure-html/unnamed-chunk-26-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Al modificar dando más peso al parámetro <strong>Beta</strong> correspondiente a la Estacionalidad, se puede apreciar como las estimaciones del 2024 es muy diferente a los modelos anteriores, lo cual se explica al considerar lo ocurrido en el año 2023 como consecuencia de factores externos que sólo afectan en ese periodo de tiempo.</p>
+<p><img src="_main_files/figure-html/unnamed-chunk-27-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="_main_files/figure-html/unnamed-chunk-28-1.png" width="672" style="display: block; margin: auto;" /><img src="_main_files/figure-html/unnamed-chunk-28-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>El ajuste del modelo muestra una tendencia constante, un nivel que se aproxima a los datos observados y una estacionalidad periódica entre los años.</p>
+</div>
+<div id="prediccion-holt-winters" class="section level3 hasAnchor" number="5.1.2">
+<h3><span class="header-section-number">5.1.2</span> - Prediccion Holt-Winters<a href="aplicacion-de-modelos.html#prediccion-holt-winters" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><img src="_main_files/figure-html/unnamed-chunk-29-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>En los valores predichos bajo el modelo <strong>Holt-winters</strong>, se implementó la predicción de 11 meses posteriores a enero 2024 con intervalos de confianza del <strong>80</strong> y <strong>95%</strong>, observando unas barreras correspondientes a <strong>1200</strong> maximo y menos de <strong>200</strong> homicidios sin 0, por observación, el número estaría entre <strong>180</strong> a <strong>150 homicidios</strong>.</p>
+</div>
+<div id="forcast-evaluation" class="section level3 hasAnchor" number="5.1.3">
+<h3><span class="header-section-number">5.1.3</span> - Forcast evaluation<a href="aplicacion-de-modelos.html#forcast-evaluation" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><img src="_main_files/figure-html/unnamed-chunk-30-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Realizando una autocorrelación a través de la función ‘acf’, se establecen unos rezagos de 30, haciendo alusión a la misma obsevación en el mes anterior, y dejando denotado no tener en cuenta los NA’s en la operación.</p>
+<p>Dado lo anterior, se observa que solo un error sobresale de la franja inferior de confianza, denotando la existencia de factores externos que tienen un grado elevado de significancia en la variabilidad de los datos pudiendo atribuirse a los cambios políticos del nuevo gobierno central o la crisis sanitaria.</p>
+</div>
+<div id="testeo-de-errores" class="section level3 hasAnchor" number="5.1.4">
+<h3><span class="header-section-number">5.1.4</span> - Testeo de errores<a href="aplicacion-de-modelos.html#testeo-de-errores" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>La prueba Ljung-box evalua la hipotesis nula de que no hay autocorrelación en los datos hasta el rezago especificado, en este caso <strong>30</strong>.</p>
+<pre><code>## 
+##  Box-Ljung test
+## 
+## data:  Modelo_evaluation$residuals
+## X-squared = 37.565, df = 30, p-value = 0.1613</code></pre>
+<p>Dado que <strong>p-value</strong> es mayor a <strong>0.05</strong> se acepta la hipotesis nula advertida en el parrafo anterior, lo que significa que en primera instacia hay una buena especificación del modelo, las predicciones son confiables y los residuos son aleatorios, lo que permite al modelo capturar adecuadamente la estructura de dependencia temporal de los datos.</p>
+<p><img src="_main_files/figure-html/unnamed-chunk-32-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Así las cosas, graficando los residuos del modelo, se tiene que gran parte de las observaciones se encuentran alrededor de <strong>0</strong>, lo que sugiere que el modelo no tiene un sesgo sistemático en sus predicciones; captura bien la estacionalidad y la tendencia de los datos; y explica en mayor parte la variabilidad de los datos.</p>
+</div>
+<div id="modelaje-box---jenkins" class="section level3 hasAnchor" number="5.1.5">
+<h3><span class="header-section-number">5.1.5</span> - Modelaje Box - Jenkins<a href="aplicacion-de-modelos.html#modelaje-box---jenkins" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>La prueba dicker-fuller realizada en líneas de código anteriores, confirma estacionariedad en los datos con un <strong>p-value</strong> de <strong>0.01</strong>; se ajustó la variabilidad y se halló los rezagos correspondientes. De esta manera, con todas estas observaciones realizadas, este subcapitulo de modelaje se trabajará con el time series conformada de <strong>‘a_estacio’</strong></p>
+</div>
+</div>
+<div id="implementacion-de-modelo-auto-arima" class="section level2 hasAnchor" number="5.2">
+<h2><span class="header-section-number">5.2</span> Implementacion de Modelo Auto-Arima<a href="aplicacion-de-modelos.html#implementacion-de-modelo-auto-arima" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<pre><code>## Series: a_estacio 
+## ARIMA(2,0,1)(0,0,2)[12] with zero mean 
+## 
+## Coefficients:
+##          ar1     ar2      ma1    sma1    sma2
+##       0.4779  0.2408  -0.9531  0.2029  0.2801
+## s.e.  0.0869  0.0855   0.0358  0.0825  0.1044
+## 
+## sigma^2 = 0.02311:  log likelihood = 79.27
+## AIC=-146.54   AICc=-146.02   BIC=-127.8</code></pre>
+<p>En respuesta a la <strong>ARIMA(2,0,1)(0,0,2)[12]</strong>; se tiene que el modelo mide una parte no estacional con los componentes <strong>(2,0,1)</strong> y estacional <strong>(0,0,2)[12]</strong>; esto, permitirá capturar patrones tanto de corto plazo como de largo plazo.De esta manera, la primera parte contiene <strong>2</strong> componentes autoregresivos. <strong>0</strong> de estacionariedad y <strong>1</strong> con media móvil; por su parte, la segunda contiene una media móvil de <strong>2</strong> y el período de evaluación de <strong>12</strong> meses refiriendosea que los datos se presentan de manera anual.</p>
+<p>Por su parte los valores bajos de <strong>AIC</strong> (<strong>Akaike Information Criterion</strong>) de <strong>-146.54</strong> señala a complejidad del modelo, donde a menor valor mejor el modelo, <strong>AICc</strong> (<strong>Corrected AIC</strong>) de <strong>-146.02</strong> y <strong>BIC</strong> (<strong>Bayesian Information Criterion</strong>) de <strong>-127.8</strong> sugieren que el modelo se ajusta bien a los datos.</p>
+<pre><code>## numeric(0)</code></pre>
+<p>retorna <strong>numeric(0)</strong>. Esto significa que no se detectaron puntos de cambio en la media de la serie temporal a_estacio utilizando el método ‘AMOC’. En otras palabras, la serie temporal no muestra evidencia de un cambio significativo en la media en ningún punto.</p>
+<p>La salida <strong>numeric(0)</strong> indica que la media de la serie temporal a_estacio es constante a lo largo del tiempo, al menos según el método <strong>‘AMOC’</strong>.</p>
+<div id="prediccion-auto-arima" class="section level3 hasAnchor" number="5.2.1">
+<h3><span class="header-section-number">5.2.1</span> - Prediccion Auto-Arima<a href="aplicacion-de-modelos.html#prediccion-auto-arima" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><img src="_main_files/figure-html/unnamed-chunk-35-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="_main_files/figure-html/unnamed-chunk-36-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>## 
+##  Shapiro-Wilk normality test
+## 
+## data:  residuales
+## W = 0.85614, p-value = 1.487e-11</code></pre>
+<p>Se puede observar que que hay residuos extremos tanto en la parte inferior como superior de la linea de ajuste. Adicionalmente en el test de Shapiro el valor <strong>W: 0,856</strong>, establece que los datos se alejan de un comportamiento normal, en lina con este resultado el <strong>p-value: 1.487e-11</strong> indica que existe suficiente evidencia estadistica para rechazar la hipotesis nula <strong>Ho:Los datos provienen de una distribucion normal</strong>.</p>
+<pre><code>## 
+##  Box-Ljung test
+## 
+## data:  residuales
+## X-squared = 0.001641, df = 1, p-value = 0.9677</code></pre>
+<p>Dado que la p-value es mayor a 0.05 se acepta la hipotesis nula, lo que significa que en primera instacia hay una buena especificación del modelo, las predicciones son confiables y los residuos son aleatorios, lo que permite al modelo capturar adecuadamente la estructura de dependencia temporal de los datos.</p>
+</div>
+</div>
+<div id="implementacion-de-modelo-prophet" class="section level2 hasAnchor" number="5.3">
+<h2><span class="header-section-number">5.3</span> Implementacion de Modelo Prophet<a href="aplicacion-de-modelos.html#implementacion-de-modelo-prophet" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Se realiza la aplicacion del modelo <strong>Prophet</strong>, debido a que el modelo solo reconoce las variables <strong>ds</strong> para unidad de tiempo y <strong>y</strong> para los valores de resultados se convierten las variables <strong>fechas</strong> y <strong>homicidios</strong> a este formato como se observa en la muestra a continuacion:</p>
+<pre><code>##           ds   y
+## 1 2010-01-01 411
+## 2 2010-02-01 392
+## 3 2010-03-01 353
+## 4 2010-04-01 389
+## 5 2010-05-01 319
+## 6 2010-06-01 397</code></pre>
+<p>Dado a que los datos se encuentran por mes, el ajuste del modelo se realiza activando la estacionalidad anual y desactivando la diaria y semanal.</p>
+<p>El objetivo de prediccion para el modelo ajustado se establece para 11 periodos de la serie de tiempo, con una frecuencia mensual, lo que nos entregaria un resultado que abarca hasta diciembre 2024.</p>
+<div id="prediccion-prophet" class="section level3 hasAnchor" number="5.3.1">
+<h3><span class="header-section-number">5.3.1</span> - Prediccion Prophet<a href="aplicacion-de-modelos.html#prediccion-prophet" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+</div>
+<div id="visualizacion-del-modelo" class="section level3 hasAnchor" number="5.3.2">
+<h3><span class="header-section-number">5.3.2</span> - Visualizacion del Modelo<a href="aplicacion-de-modelos.html#visualizacion-del-modelo" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><img src="_main_files/figure-html/unnamed-chunk-42-1.png" width="672" style="display: block; margin: auto;" /></p>
+<ul>
+<li>Los puntos negros representan medidas reales de la serie de tiempo </li>
+<li>La linea azul el pronóstico de Prophet el cual muestra un ajuste significativo a los datos reales </li>
+<li>La banda azul representa el intervalo de incertidumbre, sin embargo este se muestra bastante conservador </li>
+</ul>
+<p>En el grafico se puede observar el comportamiento durante el periodo de pandemia y la variación creciente del 2023 por fuera de las bandas predichas por el modelo, este comportamiento se muestra atipico en comparacion con el historico, lo que podria ser relevante analizar teniendo en cuenta la importancia de este indicador para la seguridad publica.</p>
+</div>
+<div id="componentes-del-modelo" class="section level3 hasAnchor" number="5.3.3">
+<h3><span class="header-section-number">5.3.3</span> - Componentes del Modelo<a href="aplicacion-de-modelos.html#componentes-del-modelo" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>A continuacion se presentan los componentes de modelo <strong>prophet</strong> en los que se observa la tendencia y los residuos, permitiendo identificar el comportamiento del modelo hasta la prediccion.</p>
+<p>Para el caso de la tendencia, es claro que la prediccion presenta un comportamiento ascendente para el año <strong>2024</strong>.</p>
+<p><img src="_main_files/figure-html/unnamed-chunk-43-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>La grafica de residuales de la prediccion muestran, que a finales de septiembre los homicidios en el país tienden a la baja; adicionalmente, los meses de julio y enero son donde este indicador sufre un incremento significativo en comparacion con el resto de los meses.</p>
+</div>
+<div id="comparación-entre-modelos" class="section level3 hasAnchor" number="5.3.4">
+<h3><span class="header-section-number">5.3.4</span> - Comparación entre modelos<a href="aplicacion-de-modelos.html#comparación-entre-modelos" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Se crea una nueva serie de tiempo excluyendo un número de meses determinado con la finalidad de tomar ese tiempo como periodo de evaluación y comparación de los resultados de los modelos</p>
+</div>
+<div id="creación-del-modelo-holt-winter-train" class="section level3 hasAnchor" number="5.3.5">
+<h3><span class="header-section-number">5.3.5</span> - Creación del modelo Holt-Winter Train<a href="aplicacion-de-modelos.html#creación-del-modelo-holt-winter-train" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Se realiza un nuevo modelo Holt-Winter para realizar el proceso de validacion de los modelos untilizando la serie de tiempo de entrenamiento con <strong>-6 meses</strong>.</p>
+<p><img src="_main_files/figure-html/unnamed-chunk-45-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>## 
+##  Augmented Dickey-Fuller Test
+## 
+## data:  nueva_ts
+## Dickey-Fuller = 0.30191, Lag order = 5, p-value = 0.99
+## alternative hypothesis: stationary</code></pre>
+<p>Dado que el p-value = 0.99 es mayor al nivel de significancia de 0.05 se rechaza la hipótesis alternativa de que la serie es estacionaria, luego de realizada la prueba <strong>Dicker - Fuller</strong> se identifica que se debe diferenciar la serie de tiempo 1 ves ya que no es estacionaria.</p>
+</div>
+<div id="creación-del-modelo-autoarima-train" class="section level3 hasAnchor" number="5.3.6">
+<h3><span class="header-section-number">5.3.6</span> - Creación del modelo AutoArima Train<a href="aplicacion-de-modelos.html#creación-del-modelo-autoarima-train" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<pre><code>## Series: nueva_ts_estacionaria 
+## ARIMA(0,0,1)(0,0,2)[12] with zero mean 
+## 
+## Coefficients:
+##           ma1    sma1    sma2
+##       -0.4869  0.1553  0.2768
+## s.e.   0.0778  0.0803  0.1008
+## 
+## sigma^2 = 0.02123:  log likelihood = 82.49
+## AIC=-156.97   AICc=-156.72   BIC=-144.62</code></pre>
+<p>En respuesta a la ARIMA(0,0,1)(0,0,2)[12]; se tiene que el modelo mide una parte no estacional con los componentes (0,0,1) y estacional (0,0,2)[12]; esto, permitirá capturar patrones tanto de corto plazo como de largo plazo. De esta manera, la primera parte contiene 0 componentes autoregresivos, 0 de estacionariedad y 1 con media móvil; por su parte, la segunda contiene una media móvil de 2 y el período de evaluación de 12 meses refiriendose a que los datos se presentan de manera anual.</p>
+</div>
+<div id="creación-del-modelo-prophet-train" class="section level3 hasAnchor" number="5.3.7">
+<h3><span class="header-section-number">5.3.7</span> - Creación del modelo Prophet Train<a href="aplicacion-de-modelos.html#creación-del-modelo-prophet-train" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Las predicciones de los modelos <strong>ARIMA</strong> y <strong>Prophet</strong> se deben transformar para volver a la escala original, para esto se debe tener como referencia los datos sin transformar</p>
+</div>
+<div id="valores-originales" class="section level3 hasAnchor" number="5.3.8">
+<h3><span class="header-section-number">5.3.8</span> - Valores Originales<a href="aplicacion-de-modelos.html#valores-originales" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Se imprime una muestra de los valores originales de la serie para los ultimos <strong>6</strong> meses, los cuales fueron utilizados para prueba del modelo</p>
+<pre><code>## actual_values
+##  576  628  630 1177 1208 1264 
+##    1    1    1    1    1    1</code></pre>
+</div>
+<div id="estimacion-de-metricas-de-modelo" class="section level3 hasAnchor" number="5.3.9">
+<h3><span class="header-section-number">5.3.9</span> - Estimacion de Metricas de Modelo<a href="aplicacion-de-modelos.html#estimacion-de-metricas-de-modelo" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<pre><code>## # A tibble: 3 × 9
+##   Model           ME  RMSE   MAE   MPE  MAPE  MASE RMSSE  ACF1
+##   &lt;chr&gt;        &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1 Holt-Winters  346.  482.  346.  56.2  56.2  2.09  1.56 0.478
+## 2 ARIMA        -696.  760.  696. -73.1  73.1  4.20  2.45 0.444
+## 3 Prophet       335.  500.  366.  56.0  58.6  2.21  1.61 0.484</code></pre>
+<pre><code>## # A tibble: 3 × 9
+##   Model           ME  RMSE   MAE   MPE  MAPE  MASE RMSSE  ACF1
+##   &lt;chr&gt;        &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1 Holt-Winters  346.  482.  346. 56.2   56.2  2.09  1.56 0.478
+## 2 ARIMA         252.  406.  318. 44.0   49.3  1.92  1.31 0.480
+## 3 Prophet      -119.  349.  327. -1.27  35.4  1.97  1.13 0.463</code></pre>
+<p>Se realiza el ejercicio para diferentes periodos de evaluación: 12, 6 y 3 meses, es decir, se crea a partir de la serie de tiempo original una serie de entrenamiento y otra de prueba con el número de meses mencionado. En esta primera evaluación se usa la serie de datos trasnformados para que sea estacionaria antes de crear los modelos ARIMA y Prophet.</p>
+<p><strong>Para los 12 meses se obtuvieronlos siguientes resultados:</strong></p>
+<p><strong>Model ME RMSE MAE MPE MAPE MASE RMSSE ACF1</strong></p>
+<p><chr> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl></p>
+<p>1 Holt-Winters -95.1 333. 312. 0.104 33.9 2.10 1.28 0.271</p>
+<p>2 ARIMA -805. 853. 805. -85.6 85.6 5.43 3.28 0.191</p>
+<p>3 Prophet 405. 536. 418. 60.5 61.6 2.82 2.06 0.295</p>
+<p><strong>Para un periodo de evaluación de 6 meses se obtuvo:</strong></p>
+<p><strong>Model ME RMSE MAE MPE MAPE MASE RMSSE ACF1</strong></p>
+<p><chr> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl></p>
+<p>1 Holt-Winters 346. 482. 346. 56.2 56.2 2.09 1.56 0.0378</p>
+<p>2 ARIMA -696. 760. 696. -73.1 73.1 4.20 2.45 -0.00611</p>
+<p>3 Prophet 335. 500. 366. 56.0 58.6 2.21 1.61 0.0812</p>
+<p><strong>Para un periodo de evaluación de 3 meses los resutlados fueron:</strong> </p>
+<p><strong>Model ME RMSE MAE MPE MAPE MASE RMSSE ACF1</strong></p>
+<p><chr> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl></p>
+<p>1 Holt-Winters 668. 669. 668. 109. 109. 24.7 18.2 -0.000571</p>
+<p>2 ARIMA -397. 398. 397. -65.0 65.0 14.7 10.8 -0.0982 </p>
+<p>3 Prophet 850. 856. 850. 139. 139. 31.5 23.3 -0.306 </p>
+<p>En esta segunda evaluación se realizan las predicciones de los modelos ARIMA y Prophet con la serie sin trasnformar.</p>
+<p><strong>Para los 12 meses se obtuvieronlos siguientes resultados:</strong></p>
+<p><strong>Model ME RMSE MAE MPE MAPE MASE RMSSE ACF1</strong></p>
+<p><chr> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl></p>
+<p>1 Holt-Winters -95.1 333. 312. 0.104 33.9 2.10 1.28 0.271</p>
+<p>2 ARIMA -38.0 289. 280. 5.81 32.2 1.89 1.11 0.231</p>
+<p>3 Prophet -258. 397. 306. -19.9 27.6 2.07 1.53 0.237</p>
+<p><strong>Para un periodo de evaluación de 6 meses se obtuvo:</strong></p>
+<p><strong>Model ME RMSE MAE MPE MAPE MASE RMSSE ACF1</strong></p>
+<p><chr> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> </p>
+<p>1 Holt-Winters 346. 482. 346. 56.2 56.2 2.09 1.56 0.0378 </p>
+<p>2 ARIMA 252. 406. 318. 44.0 49.3 1.92 1.31 0.0302 </p>
+<p>3 Prophet -119. 349. 327. -1.27 35.4 1.97 1.13 0.0369 </p>
+<p><strong>Para un periodo de evaluación de 3 meses los resutlados fueron:</strong></p>
+<p><strong>Model ME RMSE MAE MPE MAPE MASE RMSSE ACF1</strong></p>
+<p><chr> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl></p>
+<p>1 Holt-Winters 668. 669. 668. 109. 109. 24.7 18.2 -0.000571</p>
+<p>2 ARIMA 633. 634. 633. 104. 104. 23.4 17.2 -0.218</p>
+<p>3 Prophet 282. 284. 282. 46.1 46.1 10.4 7.72 -0.126 </p>
+<p>De los resultados obtenidos se evidencia en primera medida que para los modelos <strong>ARIMA</strong> y <strong>Prophet</strong> las trasnformaciones efectuadas, usando las funciones log() y <strong>diff()</strong>, con la finalidad de tener una serie de datos estacionaria, dio como resultado valores de predicción con errores más altos una vez los datos se trasnformaron a la escala original. Esto sucedió en todos los casos a excepción de lo sucedido con el modelo ARIMA al evaluarse un periodo de predicción de 3
+meses. Teniendo en consideración los resultados obtenidos de las predicciones con los modelos ARIMA y Prophet usando la serie de tiempo original, se puede concluir a partir de la métrica RMSE que el mejor modelo para realizar predicciones a largo plazo (12 meses) fue el modelo <strong>ARIMA</strong> y para los periodos de evaluación de 6 y 3 meses, el modelo con mejores resultados fue el Prophet.</p>
+</div>
+</div>
+<div id="redes-neuronales-elman-y-jordan" class="section level2 hasAnchor" number="5.4">
+<h2><span class="header-section-number">5.4</span> Redes Neuronales ELMAN y JORDAN<a href="aplicacion-de-modelos.html#redes-neuronales-elman-y-jordan" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Se crean pares de entradas y salidas para aprendizaje supervisado, asumiendo 24 meses para predecir el siguiente mes.</p>
+<div id="entrenamiento-del-modelo" class="section level3 hasAnchor" number="5.4.1">
+<h3><span class="header-section-number">5.4.1</span> - Entrenamiento del Modelo<a href="aplicacion-de-modelos.html#entrenamiento-del-modelo" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Se entrena el modelo con las siguientes caracteristicas:</p>
+<ul>
+<li><strong>Tasa de Aprendizaje:</strong> 0.1</li>
+<li><strong>Número Máximo de Iteraciones:</strong> 5000</li>
+</ul>
+<p>Se usa función plotIterativeError para ver evolución del error de la red a lo largo de las iteraciones de entrenamiento</p>
+<p><img src="_main_files/figure-html/unnamed-chunk-60-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>En el grafico se puede observar como el error no converge a cero rápidamente lo que es una indicacion de que el ajuste del modelo es debil.</p>
+<pre><code>## # A tibble: 4 × 9
+##   Model           ME  RMSE   MAE    MPE  MAPE  MASE RMSSE  ACF1
+##   &lt;chr&gt;        &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1 Holt-Winters  346.  482.  346.  56.2   56.2  2.09  1.56 0.478
+## 2 ARIMA         252.  406.  318.  44.0   49.3  1.92  1.31 0.480
+## 3 Prophet      -119.  349.  327.  -1.27  35.4  1.97  1.13 0.463
+## 4 Elman        1449. 1926. 1569. 218.   228.   9.46  6.21 0.512</code></pre>
+</div>
+</div>
+<div id="implementacion-modelo-de-jordan" class="section level2 hasAnchor" number="5.5">
+<h2><span class="header-section-number">5.5</span> Implementacion Modelo de Jordan<a href="aplicacion-de-modelos.html#implementacion-modelo-de-jordan" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="aplicacion-de-modelos.html#cb20-1" tabindex="-1"></a><span class="co"># Se entrena el modelo de Jordan</span></span>
+<span id="cb20-2"><a href="aplicacion-de-modelos.html#cb20-2" tabindex="-1"></a>modelJordan <span class="ot">&lt;-</span> <span class="fu">jordan</span>(train_inputs, train_outputs, <span class="at">size =</span> <span class="dv">12</span>, <span class="at">learnFuncParams =</span> <span class="fu">c</span>(<span class="fl">0.1</span>), <span class="at">maxit =</span> <span class="dv">5000</span>, <span class="at">linOut =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="aplicacion-de-modelos.html#cb21-1" tabindex="-1"></a><span class="co"># Se realizan las predicciones con el modelo de Jordan</span></span>
+<span id="cb21-2"><a href="aplicacion-de-modelos.html#cb21-2" tabindex="-1"></a>predictionsJordan <span class="ot">&lt;-</span> <span class="fu">predict</span>(modelJordan, test_inputs)</span>
+<span id="cb21-3"><a href="aplicacion-de-modelos.html#cb21-3" tabindex="-1"></a></span>
+<span id="cb21-4"><a href="aplicacion-de-modelos.html#cb21-4" tabindex="-1"></a><span class="co"># Se denormalizan las predicciones para evaluar con los datos reales</span></span>
+<span id="cb21-5"><a href="aplicacion-de-modelos.html#cb21-5" tabindex="-1"></a>predicted_values_Jordan <span class="ot">&lt;-</span> <span class="fu">denormalize</span>(predictionsJordan, min_val, max_val)</span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="aplicacion-de-modelos.html#cb22-1" tabindex="-1"></a><span class="co"># Se estiman las métricas para el modelo de Jordan</span></span>
+<span id="cb22-2"><a href="aplicacion-de-modelos.html#cb22-2" tabindex="-1"></a>jordan_accuracy <span class="ot">&lt;-</span> <span class="fu">compute_accuracy</span>(actual_values, predicted_values_Jordan)</span>
+<span id="cb22-3"><a href="aplicacion-de-modelos.html#cb22-3" tabindex="-1"></a></span>
+<span id="cb22-4"><a href="aplicacion-de-modelos.html#cb22-4" tabindex="-1"></a><span class="co"># Se combinan los resultados en una sola tabla para todos los modelos</span></span>
+<span id="cb22-5"><a href="aplicacion-de-modelos.html#cb22-5" tabindex="-1"></a>accuracy_table_todos <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(</span>
+<span id="cb22-6"><a href="aplicacion-de-modelos.html#cb22-6" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">Model =</span> <span class="st">&quot;Holt-Winters&quot;</span>, hw_accuracy),</span>
+<span id="cb22-7"><a href="aplicacion-de-modelos.html#cb22-7" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">Model =</span> <span class="st">&quot;ARIMA&quot;</span>, arima_accuracy_sinTrans),</span>
+<span id="cb22-8"><a href="aplicacion-de-modelos.html#cb22-8" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">Model =</span> <span class="st">&quot;Prophet&quot;</span>, prophet_accuracy_sinTrans),</span>
+<span id="cb22-9"><a href="aplicacion-de-modelos.html#cb22-9" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">Model =</span> <span class="st">&quot;Elman&quot;</span>, elman_accuracy),</span>
+<span id="cb22-10"><a href="aplicacion-de-modelos.html#cb22-10" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">Model =</span> <span class="st">&quot;Jordan&quot;</span>, jordan_accuracy)</span>
+<span id="cb22-11"><a href="aplicacion-de-modelos.html#cb22-11" tabindex="-1"></a>)</span>
+<span id="cb22-12"><a href="aplicacion-de-modelos.html#cb22-12" tabindex="-1"></a></span>
+<span id="cb22-13"><a href="aplicacion-de-modelos.html#cb22-13" tabindex="-1"></a><span class="co"># Se imprime la tabla incluyendo el modelo de Elman</span></span>
+<span id="cb22-14"><a href="aplicacion-de-modelos.html#cb22-14" tabindex="-1"></a><span class="fu">print</span>(accuracy_table_todos)</span></code></pre></div>
+<pre><code>## # A tibble: 5 × 9
+##   Model           ME  RMSE   MAE    MPE  MAPE  MASE RMSSE  ACF1
+##   &lt;chr&gt;        &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1 Holt-Winters  346.  482.  346.  56.2   56.2  2.09  1.56 0.478
+## 2 ARIMA         252.  406.  318.  44.0   49.3  1.92  1.31 0.480
+## 3 Prophet      -119.  349.  327.  -1.27  35.4  1.97  1.13 0.463
+## 4 Elman        1449. 1926. 1569. 218.   228.   9.46  6.21 0.512
+## 5 Jordan        793. 1010.  856. 113.   118.   5.16  3.26 0.371</code></pre>
+<p>De todos los modelos implementados, el que arrojó mejores resultados considerando las métricas de evaluación obtenidas para la predicción de los últimos 6 meses fue el modelo Prophet, esto considerando todas las métricas en general, pero especificamente con el RMSE que da una métrica en la escala original de los datos. </p>
+<p>De los modelos de redes neuronales el que mostró mejor comportamiento fue el modelo Elman, el cual tuvo un RMSE inferior al modelo de Jordan, pero superior al de los otros modelos. Esto indica que las redes neuronales no pudieron predecir de manera correcta la componenete de estacionalidad de la serie de tiempo.
+Como conclusión final, se considera que la escogencia del modelo para realizar predicciones en una serie de tiempo debe considerar las características propias de la serie, como son su tendencia, pero en especial su estacionalidad. En el ejercicio de escogencia se recomienda utilizar diferentes periodos de entrenamiento y evaluación, así como modificar las variables de ajsute de los modelos según las características de los componentes de la serie de tiempo”</p>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="implementacion-de-transformaciones-en-la-serie-de-tiempo.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+</body>
+
+</html>

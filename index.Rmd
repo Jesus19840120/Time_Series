@@ -1,0 +1,1045 @@
+---
+title: ' **Análisis de Series de Tiempo de Homicidios en colombia** '
+author: ' *Andrés Barrios | Jesus Gallardo | Luis Tafur* '
+date: ' *`r Sys.Date()`*'
+site: bookdown::bookdown_site
+documentClass: book
+link-citation: yes
+github-repo: null
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r, echo=FALSE, out.width="36%",out.height=="20%", fig.align = "center",warning=FALSE}
+knitr::include_graphics("C:/Users/jrgal/OneDrive/Escritorio/Maestria/Series de Tiempo/Actividad 1/Imagen Analisis Homicidios.jpg")
+
+```
+
+# **Chapter 1 Descripción**
+<div style= "text-align:justify">
+La dinámica y evolución de los homicidios en Colombia constituye un fenómeno de gran relevancia que merece ser minuciosamente analizado y comprendido. Pues, el entendimiento de sus tendencias, patrones y factores resulta esencial para abordar la complejidad de este delito en el país. En este sentido, este análisis podría arrojar luz a aspectos cruciales como la variación estacional de los homicidios, los potenciales impactos de factores socioeconómicos y demográficos y/o la influencia de las políticas de seguridad implementadas en el territorio nacional.
+<div/>
+
+La base de datos proporcionada tiene un espacio temporal que data desde el **2010** hasta enero de **2024**.
+
+**Fuente**: Dirección de Investigación Criminal e Interpol **(DIJIN) - Policía Nacional de Colombia**.
+
+[GOV.CO_DatosAbiertos](https://www.datos.gov.co/Seguridad-y-Defensa/Homicidios-accidente-de-tr-nsito-Polic-a-Nacional/ha6j-pa2r/about_data)
+
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+library(tidyverse) #Manipulación de data_set y gráficos ggplot
+library(fpp2)
+library(ggfortify)
+library(forecast)
+library(TTR)
+library(lubridate)
+library(tseries) #Prueba Dicker
+library(stats) # Funciones ACF y PACF
+library(plotly)
+library(mice)
+library(VIM)
+library(htmlwidgets)
+library(htmltools)
+library(timsac)
+library(changepoint)
+library(fpp3)
+library(prophet)
+library(dplyr)
+library(RSNNS)
+library(quantmod)
+```
+
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+#Cargue de data_set
+data <- read_csv("C:/Users/jrgal/OneDrive/Escritorio/Maestria/Series de Tiempo/Actividad 2/Unidad 2 y 3/Serie_de_tiempo_avance_dia3/Serie_de_tiempo/Homicidios.csv")
+```
+
+
+# Análisis exploratorio
+
+### *Dimensiones*
+
+Se realiza la exploracion de las dimensiones de la base de datos evidenciando que esta cuenta con:
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+#Dimensión
+dimensiones=dim(data)
+```
+**Filas:** `r dimensiones[1]` **Columnas:** `r dimensiones[2]`
+
+### *Tipo de variables*
+
+Se debe corrigir el tipo de las columnas **FECHA HECHO** y **CANTIDAD**, dado a que éstas son de tipo **Date** y **Número**, luego de aplicar los cambios se observa:
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+
+#Tipo de variables
+data$`FECHA HECHO` <- as.Date(data$`FECHA HECHO`, format = "%d/%m/%Y")
+data$CANTIDAD <- as.numeric(data$CANTIDAD)
+Clase_Cant=class(data$CANTIDAD)
+Clase_Fecha=class(data$`FECHA HECHO`)
+```
+- **CANTIDAD:** La variable es tipo `r Clase_Cant`
+- **FECHA HECHO:** La variable es tipo `r Clase_Fecha`
+
+### *Identificación de registros vacíos*
+Se realiza la verificacion de valores nulos o vacios obteniendo los siguientes resultados:
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+#Identificación de registros vacíos
+as.table( apply(data, 2, function(x) sum(is.na(x))))
+```
+Clara mente se observa que no existen valos nulos o vacios en ninguna de las variables.
+
+
+### *Identificación de registros vacíos con MICE*
+Se realiza la verificacion de valores nulos o vacios obteniendo los siguientes resultados:
+```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center', fig.alt= 2, fig.width=12}
+par(mfrow=c(3,1))
+md.pattern(data, rotate.names=TRUE)
+```
+
+Clara mente se observa que no existen valores nulos o vacios en ninguna de las variables.
+
+### - *Resumen de Estadisticos*
+
+A continuacion se muestra un resumen de los estadisticos basicos de nuestra variable **CANTIDAD**:
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+#Estadísticas básicas
+summary(data$CANTIDAD)
+```
+
+
+# - *Creacion y Exproracion de Serie de Tiempo*
+
+A continuacion se realiza la transformacion de nuestro dataset al formato se serie de tiempo esto con el objetivo de aplicar las tecnicas de exploracion y prediccion adecuadas para este tipo de informacion temporal.
+
+Iniciaremos presentando un resumen de los estadisticos de los homicidios totales de la serie de tiempo luego de realizar la transformacion de los datos:
+ 
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+df <- data %>% select(`FECHA HECHO`, CANTIDAD) %>% 
+  group_by(`FECHA HECHO`) %>% 
+  summarise(HOMICIDIOS = sum(CANTIDAD)) %>% 
+  rename(FECHA = `FECHA HECHO`) %>% 
+  transmute(FECHA, HOMICIDIOS) %>% 
+  mutate(Anio = year(FECHA),
+         Mes = month(FECHA),
+         AM = paste0(Anio, Mes)) %>% 
+  select(AM, HOMICIDIOS) %>% 
+  group_by(AM) %>% 
+  summarise(Homicidios = sum(HOMICIDIOS))
+
+df_ts <- ts(df$Homicidios, frequency = 12, start = 2010)
+
+Inicio_TS=start(df_ts)
+
+Fin_TS=end(df_ts)
+
+Clase_TS=class(df_ts)
+
+#Estadística Básica a la posterior transformación
+Resumen_df_ts= df_ts
+
+summary(Resumen_df_ts)
+```
+Dado a que es una serie de tiempo solo tendremos en cuenta la construcción de una base que contenga las variables **FECHA HECHO** y **CANTIDAD** para el analisis a realizar, de igualmanera se determinan los siguientes parametros:
+
+- **Frecuencia de la serie:** Anual
+- **Inicio de la Serie:** `r Inicio_TS`
+- **Fin de la Serie:** `r Fin_TS`
+
+adicionalmente se resaliza la verificacion de la clase de la serie de tiempo:
+
+- **Calse de la serie:** `r Clase_TS`
+
+
+### - *Visualizacion de TS*
+
+```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
+# Graficar la serie de tiempo de homicidios en Colombia con plotly
+plot_ly(x = time(df_ts), y = df_ts, type = "scatter", mode = "lines", line = list(color = "blue", width = 2)) %>%
+  layout(title = list(text = "Homicidios por mes en Colombia (2010 - 2024)", x = 0.5),  # Ajustar la posición del título
+         xaxis = list(title = "Meses"),
+         yaxis = list(title = "Homicidios"),
+         margin = list(l = 100, r = 100, t = 100, b = 100))  # Ajustar los márgenes para dejar espacio para la barra de herramientas
+```
+
+En el grafico anterior se observa que la seria presenta una leve tendencia de **2010** a **2020**, a ´partir de este punto se evidencia un notable cambio debido a la aparicion de la pandemia y el confinamiento que sufrio la poblacion a partir del año **2021** se observa que el comportamiento de homicidios en colombia adquiere un incremento mas marcado con una tendencia casi exponencial, este comportamiento podria deberse a los cambios a nivel de estrategias de seguridad implementadas con el nuevo gobierno.
+
+### - *Analisis por Ciclos* 
+
+Se realiza la evaluacion de la serie agrupada por meses para determinar patrones de comportamiento durante cada uno de ellos, este analisis permite evidenciar estacionalidades que no son tan claras viendo la serie de tiempo cruda.
+
+```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
+boxplot(df_ts ~ cycle(df_ts), xlab = "Meses", ylab = "Homicidios",
+        main = "Boxplot de los homicidios por meses")
+```
+
+Luego de analizar los resultados se evidencia que en el mes de abril hay mayor numero de homicidios, adicionalmente se evidencia que la media de los meses se encuentra entre los 400 y 500 homicidios.
+
+En 7 meses se observan unos valores atipicos que superan los 1000 homicidios y uno en el que se presentaron menos de 200, seria de gran valor hacer un analisis detallado de estos datos con el objetivo de entender mejor la naturaleza de estos resultados.
+
+### - *Identificacion de estacionalidades en  los resagos
+
+```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
+#Gráfica de rezagos
+lag.plot(df_ts, 12, do.lines = F,main = "Grafica de Rezagos")
+
+```
+
+Para el caso de la grafica de rezagos se puede afirmar que existe estacionalidad en la serie de tiempo, debido a que se reflejan patrones identificables en los datos.
+
+
+### - *Media Movil*
+
+A continuacion se realiza el calculo de las medias moviles **(SMA y EMA)** de la serie de tiempo con el objetivo de obtener de forma mas clara el comportamiento de nuestra serie e identificar cual de estas se ajusta en mejor proporcion a nuestra serie. 
+
+```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
+media_sim <- SMA(df_ts, n = 12)
+media_exp <- EMA(df_ts, n = 12) # el parámetro n significa que se utilizará los ultimos 12 datos
+Data_ts <- data.frame(fechas = seq(as.Date("2010-01-01"), by = "month",length.out = nrow(df)),
+                      homicidios = df_ts)
+```
+
+
+
+```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
+ggplot(Data_ts, aes(x = fechas, y = homicidios))+
+  geom_line(aes(y = media_sim,color = "SMA"))+
+  geom_line(aes(y = media_exp,color = "EMA"))+
+  labs(x = " ", y = "Homicidios",
+       title = "Media movil simple y exponencial de los Homicidios en Colombia 2010 a 2024")+
+  theme_minimal()+
+theme(legend.position = "top") +
+  scale_color_manual(name = " ",
+                     values = c("EMA" = "red", "SMA" = "blue"),
+                     labels = c("EMA" = "Media Movil Exponencial", "SMA" = "Media Movil Simple"))+
+  scale_x_date(date_breaks = "1 year", date_labels = "%Y")
+```
+Durante los últimos 13 años, los homicidios en Colombia han experimentado un aumento gradual.
+Las medias móviles de 12 meses muestran que en 2010 había entre 230 y 240 asesinatos, comparados con 1000 a 850 asesinatos en los últimos meses de 2023 y enero de 2024, quintuplicando así las cifras de este fenómeno en el país. 
+Se observa una tendencia a la baja al finalizar el primer semestre de cada año, seguido por un aumento durante los últimos meses, adicionalmente, se identifican dos períodos de fluctuaciones significativas: 
+
+- Una baja notable al comienzo de la pandemia en 2020, dada la crisis sanitaria provocada por el COVID y la política de aislamiento social
+
+- Un aumento sostenido en casi todo 2023, este comportamiento podria estar asociados a aumentos de bandas criminales y grupos armados como efecto de los cambios politicos que se generaron con el actual gobierno en materia de seguridad.
+
+En cuanto a las líneas móviles exponenciales versus las simples, aunque no coinciden exactamente en su posición, sí lo hacen en cuanto a su tendencia, siendo la línea simple más suavizada que la exponencial.
+
+
+```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
+ggplot(Data_ts, aes(x = fechas, y = homicidios))+
+  geom_line(color = "grey")+
+  geom_line(aes(y = media_exp, color = "EMA"), linewidth = 0.5)+
+  geom_line(aes(y = media_sim, color = "SMA"), linewidth = 0.5, alpha = 0.5)+
+  labs(x = " ", y = "Homicidios",
+       title = "Medias moviles vs cantidad de homicidios en Colombia 2010 a 2024")+
+  theme_minimal()+
+  theme(legend.position = "top") +
+  scale_color_manual(name = " ",
+                     values = c("EMA" = "red", "SMA" = "blue"),
+                     labels = c("EMA" = "Media Movil Exponencial", "SMA" = "Media Movil Simple"))+
+  scale_x_date(date_breaks = "1 year", date_labels = "%Y")
+```
+En congruencia con las medias móviles, se observa que la cantidad de homicidios no supera los 375 casos mensuales mensuales antes del 2020, sin embargo en el los periodos posteriores como en el 2023 se observa que se alcanzan valores tope hasta de 1000 muertes mesuales en el país a causa de los homicidios.
+
+### - **Componentes de las Series Temporales**
+
+A continuacion realizaremos algunas exploraciones que nos permitiran detallar mucho mejor el analisis de nuestra serie de tiempo, mediante estas herramientas podremos identificar los componentes basicos de una serie temporal y determinar las transformaciones necesarias para mejorar ciertos comportamientos para el analisis.
+
+```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
+fit_df <- decompose(Data_ts$homicidios, type='additive') # el componente 'additive' relaciona tendencia, estacionalidad y residuo
+
+autoplot(fit_df, color = "aquamarine3") +
+  labs(title = "Descomposicion de la serie de tiempo",                   
+       x = "Tiempo",
+       y = "Valor") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5, size = 16),  # Centro el título y cambio el tamaño
+  )
+
+```
+En el grafico se identifica: \n
+
+1- El comportamiento de la serie \n
+2- El comportamiento de los residuales de la serie \n
+3- El comportamiento de la estacionalidad \n
+4- El comportamiento de la tendencia \n
+
+Al observar el comportamiento de los residuos se puede establecer que la serie es **Estacionaria** esto debido a que los valores tienen un comportamiento estable al rededor de **Cero** sin variaciones significativas en la mayor parte de la serie, adicionalmente se identifica que la serie tiene un patron estacional año a año y finalmente la tendencia  presenta un comportamiento lineal de los homicidios durante los años 2010 y 2020, Posteriormente, se vuelve creciente hasta finales del 2023.
+
+
+### - *Identificación de Estacionaridad \nPrueba Dicker - Fuller*
+
+La prueba **Dicker - Fuller** nos permite a traves de valores estadisticos determinar si la serie es estacionaria o no, esta prueba se basa en desechar o aprobar la **Hipotesis Alternativa** a través del estadistico **P-Value**, donde **Hipotesis Alternativa: Es Estacionaria**.
+
+```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
+
+Estacio_Test=adf.test(Data_ts$homicidios)
+
+Estacio_Test
+
+```
+Dado que el **p-value** obtenido fue `r Estacio_Test$p.value`, valor que es inferior al nivel de significancia de **0.05** se acepta la hipotesis alternativa de que la serie **Sí es estacionaria**.
+
+### - *Estacionalidad por año*
+
+La estacionalidad en una serie de tiempo nos permite identificar patrones que nos permiten identificar patrones que se repiten con una frecuencia especifica, esta informacion es clave para tomar acciones sobre comportamientos que pueden estar asociados a comportamientos de la poblacion influenciado por factores externos **(vacaciones, temporada de lluvia, navidad, etc.)**.
+
+```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
+ggseasonplot(Data_ts$homicidios)+
+  theme_minimal()+
+  labs(x = "Mes", title = "Estacionalidad de los homicidios por mes")
+```
+
+Se evidencian picos en la mayoría de los años principalmente en los meses de febrero, abril, junio y octubre, a excepción de 2023 donde se observa un comportamiento atipico en **Enero** mas alto de lo usual y entre **Mayo y Octubre** estos valores vuelven a incrementar de forma significativa y con una tendencia incremental en ese periodo.
+
+# Implementacion de Transformaciones en la Serie de tiempo
+
+En este capitulo exploraremos diferentes tecnicas de transformacion que nos permitiran preparar nuestra serie de tiempo para aplicar los modelos requeridos para realizar las predicciones deseadas, dentro de las trnasformaciones que abordaremos estan: \n
+
+1. **Transformacion Logaritmica** \n
+
+2. **Diferenciacion**
+
+Iniciaremos evaluando cuantas diferenciaciones son necesarias para lograr estacionaridad en nuestra serie de tiempo.
+
+
+### - *Diferenciación*
+
+Dado a que en los modelos de series de tiempo se requiere tener en cuenta la estacionaridad, para una mejor modelización y capacidad predictiva, se procede a obtener las diferencias necesarias para lograr el cumplimiento de este supuesto.
+
+**¿Cuántas diferencias se necesitan para hallar estacionariedad?**
+
+```{r echo=TRUE,message=FALSE,warning=FALSE, fig.align='center'}
+Diferencias=ndiffs(Data_ts$homicidios)
+
+
+```
+
+Despues de realizar el procedimiento de diferenciacion se llega a la conclusion que se solo se requieren **`r Diferencias`** diferencias para lograr la estacionariedad requerida para el modelamiento.
+
+### - *Transformación Logaritmica*
+
+La transformacion logaritmica permite eliminar la tendencia de serie de tiempo, esto con el objetivo de estabilizar el comportamiento de la serie y que esta no se vea afectada por este componente durante el modelamiento y la prediccion, cabe resaltar que estas transformaciones, en muchos casos deben ser revertidas, como por ejemplo al realizar validaciones cruzadas entre modelos para poder tener valores en la misma escala. 
+
+```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
+x=Data_ts
+plot(x$homicidios, xlab= "Anios", ylab= "Homicidios", main= "Serie Original")
+
+x$homicidios=log(x$homicidios)
+Serie_Log= x
+plot(Serie_Log$homicidios, xlab= "Anios", ylab= "Homicidios", main= "Serie Despues de Transformacion (Log)")
+
+
+```
+
+Luego de aplicar la transformacion logaritmica a la serie de tiempo, se observa como se minimizan las diferencias en la serie, presentandonos una grafica con valores mas estables, esto nos ayuda a cumplir con el supuesto de que la serie tenga una variabilidad constante.
+
+teniendo en cuenta que la serie no es estacionaria se debe continuar con la plicacion de la diferenciacion sugerida por la prueba **Dicker - Fuller** para lograr una serie que cumpla las condiciones para su correcto modelamiento y predicciones.
+
+
+### - *Aplicación de Diferenciación*
+
+Luego de haber aplicado la transformacion logaritmica procederemos con la implementacion de la diferenciacion, para realizar este procedimiento nos apoyaremos en la funcion **diff**.
+
+```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
+a_estacio = diff(x$homicidios)
+plot(a_estacio, xlab = "Anios", ylab = " ",
+     main = "TS estacionariedad en los homicidios de Colombia \n2010 - 2024")
+```
+
+Tal y como se observa en la grafica, la diferenciacion nos ha permitido tener una serie mucho mas estable eliminando las variaciones extremas para tener datos mas uniformes. \n
+
+**NOTA:** esta transformacion debera ser revertida en futuros pasos para devolver los valores de la prediccion a las escalas originales
+
+### - *Aplicación de función ACF*
+
+Como parte de la exploracion de la serie transformada se realiza la verificacion de las correlaciones luego de las transformaciones para comprobar la estacionaridad de la serie transformada
+
+```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
+library(forecast)
+acf(a_estacio, main = "Autocorrelacion")
+```
+
+El realizar la autocorrelacion nos permite identificar un comportamiento estacionario con respecto al los resagos de tiempo en la serie.
+
+### - *Aplicación de función PACF*
+
+al igual que el analisis de autocorrelacion **ACF** el analisis de autocorrelacion parcial **PACF** nos permite evaluar la autoregresividad de la serie de tiempo.
+
+```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
+pacf(a_estacio, main = "Autocorrelacion parcial")
+```
+
+Al identificar la estructura autorregresiva en la serie, se tiene que, se necesitan 3 rezagos para predecir el valor actual de la serie.
+
+# Aplicacion de Modelos
+
+A continuacion nos concentraremos en la implementacion de modelos, en esta ocacion aplicaremos diferentes modelos para la prediccion de las series de tiempo, los modelos a aplicar son:
+
+1. **Holt-Winters** \n 
+
+2. **Auto-Arima** \n
+
+3. **Prophet**
+
+Adicionalmente realizaremos un proceso de validacion cruzada para evaluar la precision de los modelos a traves de metricas como:
+
+- **ME**
+- **RMSE**
+- **MAE**
+- **MPE**
+- **MAPE**
+- **MASE**
+- **RMSSE**
+
+
+## Aplicación de Holt-Winters Model.
+
+Dada la evidencia de existencia de un valor medio, tendencia y estacionalidad en los datos; se permite la aplicación del modelo Holt-Winters; como modelo predictorio de largo y mediano plazo por medio de un triple suavizado exponencial al tener en cuenta los aspectos mencionados con anterioridad.
+
+La primera decisión radica en elegir el tipo de patrón de estacionalidad, es decir, si este modelo debería ser representado por una estacionalidad aditiva o multiplicativa. Basándonos en la evidencia previamente encontrada, se observa una tendencia que aumenta o disminuye proporcionalmente con el promedio móvil de los datos, lo que sugiere que no permanece constante. Además, la amplitud de esta estacionalidad varía con el nivel encontrado. Por lo tanto, se decidió que el modelo a escoger será multiplicativo.
+
+### - Holt-Winters Multiplicativo
+
+```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
+Modelo <- HoltWinters(Data_ts$homicidios, seasonal = "multiplicative")
+
+plot(Modelo, main = "Predicciones con modelo Holt-Winters", ylab = "Cantidad de Homicidios", xlab = "Tiempo (Anios)")
+legend("bottomright", legend = c("Data", "Prediction"), col = c("black", "red"), lty = 1)
+
+```
+
+La gráfica nos brinda una visualización del comportamiento de las predicciones generadas por el modelo multiplicativo Holt-Winters. En un primer vistazo, podemos observar un ajuste cercano entre las predicciones y los datos base. Además, se aprecia una tendencia y estacionalidad similar entre ambas.
+
+```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
+# Se recuperan los valores alpha, beta, y gamma usados en el modelo
+alpha <- Modelo$alpha
+beta <- Modelo$beta
+gamma <- Modelo$gamma
+```
+
+Los valores de los parámetro obtenidos son:
+**Alpha:** `r alpha` \n
+**Beta:** `r beta` \n
+**Gamma:** `r gamma` \n
+
+Al revisar los parámetros usados se puede apreciar que el modelo está dando más peso al parámetro **Alpha** que corresponde a la tendencia.
+
+Para un mejor ajuste, se probará modificar los parametros **Beta**, **Gamma** y **Alpha** del modelo **holt-winters**, dado a que éstas se asocian respectivamente con tendencia, estacionalidad y nivel (**promedio móvil**).
+
+**Alpha** es un número entre 0 y 1 que determina cuanto peso se le da a las observaciones más recientes al calcular la tendencia.
+
+**Beta** es un número entre 0 y 1 que determina cuanto peso se le da a las observaciones más recientes en cuanto su estacionalidad.
+      
+**Gamma** es un número entre 0 y 1 que determina cuanto peso se le da a las observaciones más recientes en cuanto su nivel (promedio móvil).
+
+```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
+Modelo2 <- HoltWinters(Data_ts$homicidios, seasonal = "multiplicative", alpha = 0.7,
+                       beta = 0, gamma = 0.9)
+plot(Modelo2, main = "Predicciones con modelo Holt-Winters (Uso de parametros: Nivel)")
+legend("bottomright", legend = c("Data", "Prediction"), col = c("black", "red"), lty = 1)
+```
+
+Al modificar dando más peso al parámetro **Gamma** correspondiente al Nivel, se puede apreciar como las estimaciones cambian en magnitud y los picos y valles no coinciden en igual proporción como en el modelo original.
+
+```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
+Modelo3 <- HoltWinters(Data_ts$homicidios, seasonal = "multiplicative", alpha = 0.7,
+                       beta = 0.9, gamma = 0.1)
+plot(Modelo3, main = "Predicciones con modelo Holt-Winters \n (Uso de parametros: Estacionalidad)")
+legend("topleft", legend = c("Data", "Prediction"), col = c("black", "red"), lty = 1)
+
+```
+
+Al modificar dando más peso al parámetro **Beta** correspondiente a la Estacionalidad, se puede apreciar como las estimaciones del 2024 es muy diferente a los modelos anteriores, lo cual se explica al considerar lo ocurrido en el año 2023 como consecuencia de factores externos que sólo afectan en ese periodo de tiempo.
+
+```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
+Modelo4 <- HoltWinters(Data_ts$homicidios, seasonal = "multiplicative", alpha = 0.7,
+                       beta = 0.1, gamma = 0.1)
+plot(Modelo4, main = "Predicciones con modelo Holt-Winters (Uso de parametros: Estacionalidad)")
+legend("topleft", legend = c("Data", "Prediction"), col = c("black", "red"), lty = 1)
+
+```
+
+```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
+plot(fitted(Modelo), main = "Holt-winters Ajuste", xlab = "", ylab = "")
+
+plot(fitted(Modelo4), main = "Holt-winters Ajuste", xlab = "", ylab = "")
+```
+
+El ajuste del modelo muestra una tendencia constante, un nivel que se aproxima a los datos observados y una estacionalidad periódica entre los años.
+
+### - Prediccion Holt-Winters
+
+```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
+prediction <- predict(Modelo, 11, prediction.interval = TRUE, level = 0.95)
+plot(forecast(Modelo, h = 11, level = c(80,95)), main = "Predicciones en Colombia bajo el modelo Holt-Winters")
+
+```
+
+En los valores predichos bajo el modelo **Holt-winters**, se implementó la predicción de 11 meses posteriores a enero 2024 con intervalos de confianza del **80** y **95%**, observando unas barreras correspondientes a **1200** maximo y menos de **200** homicidios sin 0, por observación, el número estaría entre **180** a **150 homicidios**.
+
+### - Forcast evaluation
+
+```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
+Modelo_evaluation <- forecast(Modelo, h = 11, level=c(80,95))
+
+acf(Modelo_evaluation$residuals, lag.max=30, na.action=na.pass)
+```
+
+Realizando una autocorrelación a través de la función 'acf', se establecen unos rezagos de 30, haciendo alusión a la misma obsevación en el mes anterior, y dejando denotado no tener en cuenta los NA's en la operación.
+     
+Dado lo anterior, se observa que solo un error sobresale de la franja inferior de confianza, denotando la existencia de factores externos que tienen un grado elevado de significancia en la variabilidad de los datos pudiendo atribuirse a los cambios políticos del nuevo gobierno central o la crisis sanitaria.
+
+### - Testeo de errores
+
+La prueba Ljung-box evalua la hipotesis nula de que no hay autocorrelación en los datos hasta el rezago especificado, en este caso **30**.
+
+```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
+Box.test(Modelo_evaluation$residuals, lag=30, type="Ljung-Box")
+
+```
+
+Dado que **p-value** es mayor a **0.05** se acepta la hipotesis nula advertida en el parrafo anterior, lo que significa que en primera instacia hay una buena especificación del modelo, las predicciones son confiables y los residuos son aleatorios, lo que permite al modelo capturar adecuadamente la estructura de dependencia temporal de los datos.
+
+```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
+hist(Modelo_evaluation$residuals, main = "Residuos del modelo Holt-Winters")
+
+```
+
+Así las cosas, graficando los residuos del modelo, se tiene que gran parte de las observaciones se encuentran alrededor de **0**, lo que sugiere que el modelo no tiene un sesgo sistemático en sus predicciones; captura bien la estacionalidad y la tendencia de los datos; y explica en mayor parte la variabilidad de los datos.
+
+### - Modelaje Box - Jenkins
+
+La prueba dicker-fuller realizada en líneas de código anteriores, confirma estacionariedad en los datos con un **p-value** de **0.01**; se ajustó la variabilidad y se halló los rezagos correspondientes. De esta manera, con todas estas observaciones realizadas, este subcapitulo de modelaje se trabajará con el time series conformada de **'a_estacio'**
+
+## Implementacion de Modelo Auto-Arima
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
+# Hallando el modelo de ajuste
+
+m_arima <- auto.arima(a_estacio)
+m_arima
+```
+
+En respuesta a la **ARIMA(2,0,1)(0,0,2)[12]**; se tiene que el modelo mide una parte no estacional con los componentes **(2,0,1)** y estacional **(0,0,2)[12]**; esto, permitirá capturar patrones tanto de corto plazo como de largo plazo.De esta manera, la primera parte contiene **2** componentes autoregresivos. **0** de estacionariedad y **1** con media móvil; por su parte, la segunda contiene una media móvil de **2** y el período de evaluación de **12** meses refiriendosea que los datos se presentan de manera anual.
+      
+Por su parte los valores bajos de **AIC** (**Akaike Information Criterion**) de **-146.54** señala a complejidad del modelo, donde a menor valor mejor el modelo, **AICc** (**Corrected AIC**) de **-146.02** y **BIC** (**Bayesian Information Criterion**) de **-127.8** sugieren que el modelo se ajusta bien a los datos.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
+# Hallando el punto de cambio de la media
+
+p_change <- cpt.mean(a_estacio, method = "AMOC") # AMOC = "At most one change"
+cpts(p_change)
+```
+
+retorna **numeric(0)**. Esto significa que no se detectaron puntos de cambio en la media de la serie temporal a_estacio utilizando el método 'AMOC'. En otras palabras, la serie temporal no muestra evidencia de un cambio significativo en la media en ningún punto.
+      
+La salida **numeric(0)** indica que la media de la serie temporal a_estacio es constante a lo largo del tiempo, al menos según el método **'AMOC'**.
+
+### - Prediccion Auto-Arima
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
+# Realizar predicciones a 11 pasos hacia adelante
+predicciones <- forecast(m_arima, h = 11)
+
+# Visualizar las predicciones
+plot(predicciones, main = "Predicciones con el modelo ARIMA")
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
+residuales<-m_arima$residuals
+qqnorm(residuales)
+qqline(residuales)
+shapiro.test(residuales)
+
+```
+
+Se puede observar que que hay residuos extremos tanto en la parte inferior como superior de la linea de ajuste. Adicionalmente en el test de Shapiro el valor **W: 0,856**, establece que los datos se alejan de un comportamiento normal, en lina con este resultado el **p-value: 1.487e-11** indica que existe suficiente evidencia estadistica para rechazar la hipotesis nula **Ho:Los datos provienen de una distribucion normal**.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
+Box.test(residuales, type="Ljung-Box")
+
+```
+
+Dado que la p-value es mayor a 0.05 se acepta la hipotesis nula, lo que significa que en primera instacia hay una buena especificación del modelo, las predicciones son confiables y los residuos son aleatorios, lo que permite al modelo capturar adecuadamente la estructura de dependencia temporal de los datos.
+
+
+## Implementacion de Modelo Prophet
+
+Se realiza la aplicacion del modelo **Prophet**, debido a que el modelo solo reconoce las variables **ds** para unidad de tiempo y **y** para los valores de resultados se convierten las variables **fechas** y **homicidios** a este formato como se observa en la muestra a continuacion: 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
+# La serie de tiempo debe ser estacionaria.
+
+Data_ts <- Data_ts %>% rename(ds = fechas, y = homicidios) # se modifica el nombre para no modificar el dataset original, Se debe renombrar las variables fechas y homicidios a ds y Y respectivamente, ya que la libreria solo conoce estos datos.
+
+head(Data_ts)
+
+```
+
+
+```{r echo=FALSE, message=TRUE, warning=TRUE, fig.align='center'}
+
+# Ajustar el modelo Prophet
+modelo_prophet <- prophet(Data_ts,       # Se toma el nuevo dataset
+                          yearly.seasonality = TRUE,
+                          weekly.seasonality = FALSE, 
+                          daily.seasonality = FALSE )
+
+```
+
+Dado a que los datos se encuentran por mes, el ajuste del modelo se realiza activando la estacionalidad anual y desactivando la diaria y semanal.
+
+
+
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
+# Crear un dataframe con las fechas futuras
+futuro_prophet <- make_future_dataframe(modelo_prophet, periods = 11, freq = 'month')
+```
+
+El objetivo de prediccion para el modelo ajustado se establece para 11 periodos de la serie de tiempo, con una frecuencia mensual, lo que nos entregaria un resultado que abarca hasta diciembre 2024.
+
+### - Prediccion Prophet
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
+# Hacer las predicciones
+forecast_prophet <- predict(modelo_prophet, futuro_prophet)
+```
+
+### - Visualizacion del Modelo
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
+# Visualizar los resultados
+plot(modelo_prophet, forecast_prophet)
+```
+
+- Los puntos negros representan medidas reales de la serie de tiempo \n
+- La linea azul el pronóstico de Prophet el cual muestra un ajuste significativo a los datos reales \n
+- La banda azul representa el intervalo de incertidumbre, sin embargo este se muestra bastante conservador \n
+
+En el grafico se puede observar el comportamiento durante el periodo de pandemia y la variación creciente del 2023 por fuera de las bandas predichas por el modelo, este comportamiento se muestra atipico en comparacion con el historico, lo que podria ser relevante analizar teniendo en cuenta la importancia de este indicador para la seguridad publica.
+
+### - Componentes del Modelo
+A continuacion se presentan los componentes de modelo **prophet** en los que se observa la tendencia y los residuos, permitiendo identificar el comportamiento del modelo hasta la prediccion.
+
+Para el caso de la tendencia, es claro que la prediccion presenta un comportamiento ascendente para el año **2024**.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
+prophet_plot_components(modelo_prophet, forecast_prophet)
+
+
+```
+
+La grafica de residuales de la prediccion muestran, que a finales de septiembre los homicidios en el país tienden a la baja; adicionalmente, los meses de julio y enero son donde este indicador sufre un incremento significativo en comparacion con el resto de los meses.
+      
+
+### - Comparación entre modelos
+
+Se crea una nueva serie de tiempo excluyendo un número de meses determinado con la finalidad de tomar ese tiempo como periodo de evaluación y comparación de los resultados de los modelos
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
+
+# Número de meses a excluir
+num_meses_a_excluir <- 6
+# Número de meses que se mantienen 
+num_meses_a_mantener <- length(df_ts) - num_meses_a_excluir
+
+# Se determina el periodo en el cual termina la nueva serie de tiempo
+anio_final <- 2010 + (num_meses_a_mantener - 1) %/% 12
+mes_final <- (num_meses_a_mantener - 1) %% 12 + 1
+
+# Creación de nueva serie de tiempo excluyendo el # de meses determinado
+nueva_ts <- window(df_ts, end = c(anio_final, mes_final))
+
+```
+
+### - Creación del modelo Holt-Winter Train
+
+Se realiza un nuevo modelo Holt-Winter para realizar el proceso de validacion de los modelos untilizando la serie de tiempo de entrenamiento con **-6 meses**.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
+# Creación de Modelo Holt-Winters con nueva serie de tiempo
+nuevoMod_holt_winters <- HoltWinters(nueva_ts, seasonal = "additive")
+
+# Se grafica el nuevo Modelo
+plot(nuevoMod_holt_winters, main = "Nuevo modelo Holt-Winters")
+
+```
+
+```{r echo=FALSE,warning=FALSE, message=FALSE}
+# Identificación de estacionariedad, prueba dicker - fuller para la nueva serie de tiempo
+
+adf.test(nueva_ts)
+
+#¿Cuántas diferencias se necesitan para hallar estacionariedad de la nueva serie?
+Cant_Diff= ndiffs(nueva_ts)
+
+```
+
+Dado que el p-value = 0.99 es mayor al nivel de significancia de 0.05 se rechaza la hipótesis alternativa de que la serie es estacionaria, luego de realizada la prueba **Dicker - Fuller** se identifica que se debe diferenciar la serie de tiempo `r Cant_Diff` ves ya que no es estacionaria.
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
+# Transformación para la variabilidad de la nueva serie
+nueva_ts_log = log(nueva_ts) 
+
+#Aplicación de diferenciación para la nueva serie
+nueva_ts_estacionaria = diff(nueva_ts_log)
+
+```
+
+### - Creación del modelo AutoArima Train
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
+# Se crea el nuevo modelo ARIMA correspondiente a la nueva serie de tiempo
+nuevoMod_arima <- auto.arima(nueva_ts_estacionaria)
+nuevoMod_arima
+
+# Se crea modelo ARIMA para serie de tiempo sin transformar
+nuevoMod_arima_sinTrans <- auto.arima(nueva_ts)
+```
+
+En respuesta a la ARIMA(0,0,1)(0,0,2)[12]; se tiene que el modelo mide una parte no estacional con los componentes (0,0,1) y estacional (0,0,2)[12]; esto, permitirá capturar patrones tanto de corto plazo como de largo plazo. De esta manera, la primera parte contiene 0 componentes autoregresivos, 0 de estacionariedad y 1 con media móvil; por su parte, la segunda contiene una media móvil de 2 y el período de evaluación de 12 meses refiriendose a que los datos se presentan de manera anual.
+
+### - Creación del modelo Prophet Train
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
+# Primero se debe crear el DF con la nueva serie estacionaria
+nuevo_Data_ts <- data.frame(
+  ds = as.Date(time(nueva_ts_estacionaria)),
+  y = as.numeric(nueva_ts_estacionaria)
+)
+# DF con serie no estacionaria
+nuevo_Data_ts_sinTrans <- data.frame(
+  ds = as.Date(time(nueva_ts)),
+  y = as.numeric(nueva_ts)
+)
+```
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
+# Se crea el nuevo modelo Prophet
+nuevoMod_prophet <- prophet(nuevo_Data_ts,       # Se toma el nuevo dataset
+                          yearly.seasonality = TRUE,
+                          weekly.seasonality = FALSE, 
+                          daily.seasonality = FALSE )
+# modelo Prophet basado en serie sin transformar
+nuevoMod_prophet_sinTrans <- prophet(nuevo_Data_ts_sinTrans,       
+                            yearly.seasonality = TRUE,
+                            weekly.seasonality = FALSE, 
+                            daily.seasonality = FALSE )
+```
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
+# Se realizan las predicciones para los meses estimados para la evaluación
+
+# Predicciones modelo Holt-winters
+hw_forecasts <- forecast(nuevoMod_holt_winters, h = num_meses_a_excluir)
+
+# Predicciones modelo ARIMA
+arima_forecasts <- forecast(nuevoMod_arima, h = num_meses_a_excluir)
+arima_forecasts_sinTrans <- forecast(nuevoMod_arima_sinTrans, h = num_meses_a_excluir)
+
+# Predicciones modelo Prophet
+# Se crea un DF con fechas futuras hasta enero de 2024
+nuevo_futuro_prophet <- make_future_dataframe(nuevoMod_prophet, periods = num_meses_a_excluir, freq = 'month')
+prophet_forecasts <- predict(nuevoMod_prophet, nuevo_futuro_prophet)
+prophet_forecasts_sinTrans <- predict(nuevoMod_prophet_sinTrans, nuevo_futuro_prophet)
+
+
+```
+
+Las predicciones de los modelos **ARIMA** y **Prophet** se deben transformar para volver a la escala original, para esto se debe tener como referencia los datos sin transformar
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
+# Para modelo Prophet se reconstruye a partir de la serie sin transformar
+reconstructed_prophet_forecast <- exp(c(log(Data_ts$y[1]), log(Data_ts$y[1]) + cumsum(prophet_forecasts$yhat)))
+
+# Para modelo ARIMA se requiere tener la serie completa de la predicción
+arima_forecast_completa <- c(arima_forecasts$fitted, arima_forecasts$mean)
+reconstructed_arima_forecast <- exp(c(log(Data_ts$y[1]), log(Data_ts$y[1]) + cumsum(arima_forecast_completa)))
+```
+
+
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
+# Se estiman las métricas de precisión
+# Se crea una función para estimar las métricas en todos los modelos 
+compute_accuracy <- function(actual, forecast) {
+  tibble(
+    ME = mean(forecast - actual),
+    RMSE = sqrt(mean((forecast - actual)^2)),
+    MAE = mean(abs(forecast - actual)),
+    MPE = mean((forecast - actual) / actual) * 100,
+    MAPE = mean(abs((forecast - actual) / actual)) * 100,
+    MASE = mean(abs(forecast - actual)) / mean(abs(diff(actual))),
+    RMSSE = sqrt(mean((forecast - actual)^2)) / sqrt(mean(diff(actual)^2)),
+    ACF1 = acf(forecast - actual , plot = FALSE)$acf[2]
+  )
+}
+```
+
+
+### - Valores Originales
+
+Se imprime una muestra de los valores originales de la serie para los ultimos **6** meses, los cuales fueron utilizados para prueba del modelo
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
+actual_values <-tail(Data_ts$y, n = 6)
+
+table(actual_values)
+```
+
+### - Estimacion de Metricas de Modelo
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
+# Se estiman las métricas para cada modelo
+hw_accuracy <- compute_accuracy(actual_values,hw_forecasts$mean)
+arima_accuracy <- compute_accuracy(actual_values, tail(reconstructed_arima_forecast, n = num_meses_a_excluir))
+arima_accuracy_sinTrans <- compute_accuracy(actual_values, arima_forecasts_sinTrans$mean)
+prophet_accuracy <- compute_accuracy(actual_values, tail(reconstructed_prophet_forecast, n = num_meses_a_excluir))
+prophet_accuracy_sinTrans <- compute_accuracy(actual_values, tail(prophet_forecasts_sinTrans$yhat, n = num_meses_a_excluir))
+
+
+```
+
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
+# Se combinan los resultados en una sola tabla para series trasnformadas
+accuracy_table <- bind_rows(
+  tibble(Model = "Holt-Winters", hw_accuracy),
+  tibble(Model = "ARIMA", arima_accuracy),
+  tibble(Model = "Prophet", prophet_accuracy)
+)
+
+# Se combinan los resultados en una sola tabla para series sin trasnformar
+accuracy_table_sinTrans <- bind_rows(
+  tibble(Model = "Holt-Winters", hw_accuracy),
+  tibble(Model = "ARIMA", arima_accuracy_sinTrans),
+  tibble(Model = "Prophet", prophet_accuracy_sinTrans)
+)
+
+# Se imprime la tabla con ARIMA y Prophet con series estacionarias
+print(accuracy_table)
+# Se imprime la tabla con ARIMA y Prophet con series no estacionarias
+print(accuracy_table_sinTrans)
+
+
+```
+
+Se realiza el ejercicio para diferentes periodos de evaluación: 12, 6 y 3 meses, es decir, se crea a partir de la serie de tiempo original una serie de entrenamiento y otra de prueba con el número de meses mencionado. En esta primera evaluación se usa la serie de datos trasnformados para que sea estacionaria antes de crear los modelos ARIMA y Prophet.\n
+
+**Para los 12 meses se obtuvieronlos siguientes resultados:**\n
+
+**Model            ME  RMSE   MAE     MPE  MAPE  MASE RMSSE  ACF1**\n
+
+ <chr>         <dbl> <dbl> <dbl>   <dbl> <dbl> <dbl> <dbl> <dbl>\n
+ 
+ 1 Holt-Winters  -95.1  333.  312.   0.104  33.9  2.10  1.28 0.271\n
+ 
+ 2 ARIMA        -805.   853.  805. -85.6    85.6  5.43  3.28 0.191\n
+ 
+ 3 Prophet       405.   536.  418.  60.5    61.6  2.82  2.06 0.295\n
+ 
+ **Para un periodo de evaluación de 6 meses se obtuvo:**\n
+
+**Model           ME  RMSE   MAE   MPE  MAPE  MASE RMSSE     ACF1**\n
+
+<chr>        <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>    <dbl>\n
+
+1 Holt-Winters  346.  482.  346.  56.2  56.2  2.09  1.56  0.0378\n
+
+2 ARIMA        -696.  760.  696. -73.1  73.1  4.20  2.45 -0.00611\n
+
+3 Prophet       335.  500.  366.  56.0  58.6  2.21  1.61  0.0812\n
+
+**Para un periodo de evaluación de 3 meses los resutlados fueron:** \n
+
+**Model           ME  RMSE   MAE   MPE  MAPE  MASE RMSSE      ACF1**\n
+
+  <chr>        <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>     <dbl>\n
+  
+1 Holt-Winters  668.  669.  668. 109.  109.   24.7  18.2 -0.000571\n
+
+2 ARIMA        -397.  398.  397. -65.0  65.0  14.7  10.8 -0.0982 \n
+
+3 Prophet       850.  856.  850. 139.  139.   31.5  23.3 -0.306 \n
+
+En esta segunda evaluación se realizan las predicciones de los modelos ARIMA y Prophet con la serie sin trasnformar.\n
+
+**Para los 12 meses se obtuvieronlos siguientes resultados:**\n
+
+**Model            ME  RMSE   MAE     MPE  MAPE  MASE RMSSE  ACF1**\n
+
+  <chr>         <dbl> <dbl> <dbl>   <dbl> <dbl> <dbl> <dbl> <dbl>\n
+  
+1 Holt-Winters  -95.1  333.  312.   0.104  33.9  2.10  1.28 0.271\n
+
+2 ARIMA         -38.0  289.  280.   5.81   32.2  1.89  1.11 0.231\n
+
+3 Prophet      -258.   397.  306. -19.9    27.6  2.07  1.53 0.237\n
+
+**Para un periodo de evaluación de 6 meses se obtuvo:**\n
+
+**Model           ME  RMSE   MAE   MPE  MAPE  MASE RMSSE   ACF1**\n
+
+  <chr>        <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>  <dbl> \n
+  
+1 Holt-Winters  346.  482.  346. 56.2   56.2  2.09  1.56 0.0378 \n
+
+2 ARIMA         252.  406.  318. 44.0   49.3  1.92  1.31 0.0302 \n
+
+3 Prophet      -119.  349.  327. -1.27  35.4  1.97  1.13 0.0369 \n
+
+**Para un periodo de evaluación de 3 meses los resutlados fueron:**\n
+
+**Model           ME  RMSE   MAE   MPE  MAPE  MASE RMSSE      ACF1**\n
+
+  <chr>        <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>     <dbl>\n
+  
+1 Holt-Winters  668.  669.  668. 109.  109.   24.7 18.2  -0.000571\n
+
+2 ARIMA         633.  634.  633. 104.  104.   23.4 17.2  -0.218\n
+
+3 Prophet       282.  284.  282.  46.1  46.1  10.4  7.72 -0.126 \n 
+
+De los resultados obtenidos se evidencia en primera medida que para los modelos **ARIMA** y **Prophet** las trasnformaciones efectuadas, usando las funciones log() y **diff()**, con la finalidad de tener una serie de datos estacionaria, dio como resultado valores de predicción con errores más altos una vez los datos se trasnformaron a la escala original. Esto sucedió en todos los casos a excepción de lo sucedido con el modelo ARIMA al evaluarse un periodo de predicción de 3 
+meses. Teniendo en consideración los resultados obtenidos de las predicciones con los modelos ARIMA y Prophet usando la serie de tiempo original, se puede concluir a partir de la métrica RMSE que el mejor modelo para realizar predicciones a largo plazo (12 meses) fue el modelo **ARIMA** y para los periodos de evaluación de 6 y 3 meses, el modelo con mejores resultados fue el Prophet. 
+
+
+## Redes Neuronales ELMAN y JORDAN
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
+
+# Se crea función para normalizar los datos
+normalize <- function(x) {
+  return((x - min(x)) / (max(x) - min(x)))
+}
+
+df_ts_normalized <- normalize(df_ts)
+```
+
+Se crean pares de entradas y salidas para aprendizaje supervisado, asumiendo 24 meses para predecir el siguiente mes.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
+
+lagged_data <- embed(df_ts_normalized, 25)
+inputs <- lagged_data[, 2:13]
+outputs <- lagged_data[, 1]
+
+# Se divide el conjunto de datos en entrenamiento y evaluación usando 
+# considerando el número de meses a excluir con fines de evaluación
+
+test_size <- num_meses_a_excluir
+train_size <- nrow(inputs) - test_size
+
+train_inputs <- inputs[1:train_size, ]
+train_outputs <- outputs[1:train_size]
+test_inputs <- inputs[(train_size + 1):nrow(inputs), ]
+test_outputs <- outputs[(train_size + 1):nrow(inputs)]
+```
+
+### - Entrenamiento del Modelo
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
+# Se entrena el modelo de Elman
+model <- elman(train_inputs, train_outputs, size = c(10, 5), learnFuncParams = c(0.1), maxit = 5000, linOut = TRUE)
+
+```
+
+Se entrena el modelo con las siguientes caracteristicas:
+
+- **Tasa de Aprendizaje:** 0.1\n
+- **Número Máximo de Iteraciones:** 5000
+
+Se usa  función plotIterativeError para ver evolución del error de la red a lo largo de las iteraciones de entrenamiento
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
+plotIterativeError(model)
+
+```
+
+En el grafico se puede observar como el error no converge a cero rápidamente lo que es una indicacion de que el ajuste del modelo es debil.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
+# Se realizan predicciones para evaluar el modelo
+predictionsElman <- predict(model, test_inputs)
+
+# Se denormalizan las predicciones para evaluar con los datos reales
+denormalize <- function(x, min, max) {
+  return(x * (max - min) + min)
+}
+
+min_val <- min(df_ts)
+max_val <- max(df_ts)
+
+predicted_values_Elman <- denormalize(predictionsElman, min_val, max_val)
+```
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
+# Se estiman las métricas para el modelo de Elman
+elman_accuracy <- compute_accuracy(actual_values, predicted_values_Elman)
+
+# Se combinan los resultados en una sola tabla para series sin trasnformar
+accuracy_table_sinTrans <- bind_rows(
+  tibble(Model = "Holt-Winters", hw_accuracy),
+  tibble(Model = "ARIMA", arima_accuracy_sinTrans),
+  tibble(Model = "Prophet", prophet_accuracy_sinTrans),
+  tibble(Model = "Elman", elman_accuracy)
+)
+
+# Se imprime la tabla incluyendo el modelo de Elman
+print(accuracy_table_sinTrans)
+```
+
+
+## Implementacion Modelo de Jordan  
+
+```{r}
+# Se entrena el modelo de Jordan
+modelJordan <- jordan(train_inputs, train_outputs, size = 12, learnFuncParams = c(0.1), maxit = 5000, linOut = TRUE)
+```
+
+
+```{r}
+# Se realizan las predicciones con el modelo de Jordan
+predictionsJordan <- predict(modelJordan, test_inputs)
+
+# Se denormalizan las predicciones para evaluar con los datos reales
+predicted_values_Jordan <- denormalize(predictionsJordan, min_val, max_val)
+
+```
+
+```{r}
+# Se estiman las métricas para el modelo de Jordan
+jordan_accuracy <- compute_accuracy(actual_values, predicted_values_Jordan)
+
+# Se combinan los resultados en una sola tabla para todos los modelos
+accuracy_table_todos <- bind_rows(
+  tibble(Model = "Holt-Winters", hw_accuracy),
+  tibble(Model = "ARIMA", arima_accuracy_sinTrans),
+  tibble(Model = "Prophet", prophet_accuracy_sinTrans),
+  tibble(Model = "Elman", elman_accuracy),
+  tibble(Model = "Jordan", jordan_accuracy)
+)
+
+# Se imprime la tabla incluyendo el modelo de Elman
+print(accuracy_table_todos)
+```
+
+De todos los modelos implementados, el que arrojó mejores resultados considerando las métricas de evaluación obtenidas para la predicción de los últimos 6 meses fue el modelo Prophet, esto considerando todas las métricas en general, pero especificamente con el RMSE que da una métrica en la escala original de los datos. \n
+
+De los modelos de redes neuronales el que mostró mejor comportamiento fue el modelo Elman, el cual tuvo un RMSE inferior al modelo de Jordan, pero superior al de los otros modelos. Esto indica que las redes neuronales no pudieron predecir de manera correcta la componenete de estacionalidad de la serie de tiempo. 
+Como conclusión final, se considera que la escogencia del modelo para realizar predicciones en una serie de tiempo debe considerar las características propias de la serie, como son su tendencia, pero en especial su estacionalidad. En el ejercicio de escogencia se recomienda utilizar diferentes periodos de entrenamiento y evaluación, así como modificar las variables de ajsute de los modelos según las características de los componentes de la serie de tiempo"
+
