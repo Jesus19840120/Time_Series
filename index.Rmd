@@ -3,8 +3,7 @@ title: ' **Análisis de Series de Tiempo de Homicidios en colombia** '
 author: ' *Andrés Barrios | Jesus Gallardo | Luis Tafur* '
 date: ' *`r Sys.Date()`*'
 site: bookdown::bookdown_site
-documentClass: book
-output_dir: "docs"
+documentclass: book
 
 ---
 
