@@ -4,8 +4,8 @@ author: ' *Andrés Barrios | Jesus Gallardo | Luis Tafur* '
 date: ' *`r Sys.Date()`*'
 site: bookdown::bookdown_site
 documentClass: book
-link-citation: yes
-github-repo: null
+output_dir: "docs"
+
 ---
 
 ```{r setup, include=FALSE}
