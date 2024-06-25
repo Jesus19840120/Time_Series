@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>chapter6 Redes Neuronales ELMAN y JORDAN | Análisis de Series de Tiempo de Homicidios en colombia</title>
-  <meta name="description" content="chapter6 Redes Neuronales ELMAN y JORDAN | Análisis de Series de Tiempo de Homicidios en colombia" />
+  <title>chapter2 Análisis exploratorio | Análisis de Series de Tiempo de Homicidios en colombia</title>
+  <meta name="description" content="chapter2 Análisis exploratorio | Análisis de Series de Tiempo de Homicidios en colombia" />
   <meta name="generator" content="bookdown 0.39 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="chapter6 Redes Neuronales ELMAN y JORDAN | Análisis de Series de Tiempo de Homicidios en colombia" />
+  <meta property="og:title" content="chapter2 Análisis exploratorio | Análisis de Series de Tiempo de Homicidios en colombia" />
   <meta property="og:type" content="book" />
   
   
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="chapter6 Redes Neuronales ELMAN y JORDAN | Análisis de Series de Tiempo de Homicidios en colombia" />
+  <meta name="twitter:title" content="chapter2 Análisis exploratorio | Análisis de Series de Tiempo de Homicidios en colombia" />
   
   
   
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="aplicacion-de-modelos.html"/>
-
+<link rel="prev" href="index.html"/>
+<link rel="next" href="creacion-y-exproracion-de-serie-de-tiempo.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -229,79 +229,55 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="redes-neuronales-elman-y-jordan" class="section level1 hasAnchor" number="6">
-<h1><span class="header-section-number">chapter6</span> Redes Neuronales ELMAN y JORDAN<a href="redes-neuronales-elman-y-jordan.html#redes-neuronales-elman-y-jordan" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<div id="implementacion-modelo-elman" class="section level2 hasAnchor" number="6.1">
-<h2><span class="header-section-number">6.1</span> Implementacion Modelo Elman<a href="redes-neuronales-elman-y-jordan.html#implementacion-modelo-elman" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Se crean pares de entradas y salidas para aprendizaje supervisado, asumiendo 24 meses para predecir el siguiente mes.</p>
-<div id="entrenamiento-del-modelo" class="section level3 hasAnchor" number="6.1.1">
-<h3><span class="header-section-number">6.1.1</span> - Entrenamiento del Modelo<a href="redes-neuronales-elman-y-jordan.html#entrenamiento-del-modelo" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>Se entrena el modelo con las siguientes caracteristicas:</p>
+<div id="análisis-exploratorio" class="section level1 hasAnchor" number="2">
+<h1><span class="header-section-number">chapter2</span> Análisis exploratorio<a href="análisis-exploratorio.html#análisis-exploratorio" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="dimensiones" class="section level3 hasAnchor" number="2.0.1">
+<h3><span class="header-section-number">2.0.1</span> <em>Dimensiones</em><a href="análisis-exploratorio.html#dimensiones" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Se realiza la exploracion de las dimensiones de la base de datos evidenciando que esta cuenta con:</p>
+<p><strong>Filas:</strong> 75152 <strong>Columnas:</strong> 9</p>
+</div>
+<div id="tipo-de-variables" class="section level3 hasAnchor" number="2.0.2">
+<h3><span class="header-section-number">2.0.2</span> <em>Tipo de variables</em><a href="análisis-exploratorio.html#tipo-de-variables" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Se debe corrigir el tipo de las columnas <strong>FECHA HECHO</strong> y <strong>CANTIDAD</strong>, dado a que éstas son de tipo <strong>Date</strong> y <strong>Número</strong>, luego de aplicar los cambios se observa:</p>
 <ul>
-<li><strong>Tasa de Aprendizaje:</strong> 0.1</li>
-<li><strong>Número Máximo de Iteraciones:</strong> 5000</li>
+<li><strong>CANTIDAD:</strong> La variable es tipo numeric</li>
+<li><strong>FECHA HECHO:</strong> La variable es tipo Date</li>
 </ul>
 </div>
-<div id="evolucion-de-error-elman" class="section level3 hasAnchor" number="6.1.2">
-<h3><span class="header-section-number">6.1.2</span> - Evolucion de Error Elman<a href="redes-neuronales-elman-y-jordan.html#evolucion-de-error-elman" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>Se usa función plotIterativeError para ver evolución del error de la red a lo largo de las iteraciones de entrenamiento</p>
-<p><img src="_main_files/figure-html/unnamed-chunk-60-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>En el grafico se puede observar como el error no converge a cero rápidamente lo que es una indicacion de que el ajuste del modelo es debil.</p>
+<div id="identificación-de-registros-vacíos" class="section level3 hasAnchor" number="2.0.3">
+<h3><span class="header-section-number">2.0.3</span> <em>Identificación de registros vacíos</em><a href="análisis-exploratorio.html#identificación-de-registros-vacíos" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Se realiza la verificacion de valores nulos o vacios obteniendo los siguientes resultados:</p>
+<pre><code>##         DEPARTAMENTO            MUNICIPIO          CODIGO DANE 
+##                    0                    0                    0 
+##         ARMAS MEDIOS          FECHA HECHO               GENERO 
+##                    0                    0                    0 
+##         GRUPO ETARÍO DESCRIPCIÓN CONDUCTA             CANTIDAD 
+##                    0                    0                    0</code></pre>
+<p>Clara mente se observa que no existen valos nulos o vacios en ninguna de las variables.</p>
 </div>
-<div id="metricas-modelo-elman" class="section level3 hasAnchor" number="6.1.3">
-<h3><span class="header-section-number">6.1.3</span> - Metricas Modelo Elman<a href="redes-neuronales-elman-y-jordan.html#metricas-modelo-elman" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<pre><code>## # A tibble: 4 × 9
-##   Model           ME  RMSE   MAE   MPE  MAPE  MASE RMSSE  ACF1
-##   &lt;chr&gt;        &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
-## 1 Holt-Winters  346.  482.  346. 56.2   56.2  2.09  1.56 0.478
-## 2 ARIMA         252.  406.  318. 44.0   49.3  1.92  1.31 0.480
-## 3 Prophet      -119.  349.  327. -1.27  35.4  1.97  1.13 0.463
-## 4 Elman         586.  800.  689. 89.5   98.2  4.16  2.58 0.445</code></pre>
+<div id="identificación-de-registros-vacíos-con-mice" class="section level3 hasAnchor" number="2.0.4">
+<h3><span class="header-section-number">2.0.4</span> <em>Identificación de registros vacíos con MICE</em><a href="análisis-exploratorio.html#identificación-de-registros-vacíos-con-mice" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Se realiza la verificacion de valores nulos o vacios obteniendo los siguientes resultados:</p>
+<pre><code>##  /\     /\
+## {  `---&#39;  }
+## {  O   O  }
+## ==&gt;  V &lt;==  No need for mice. This data set is completely observed.
+##  \  \|/  /
+##   `-----&#39;</code></pre>
+<pre><code>##       DEPARTAMENTO MUNICIPIO CODIGO DANE ARMAS MEDIOS FECHA HECHO GENERO
+## 75152            1         1           1            1           1      1
+##                  0         0           0            0           0      0
+##       GRUPO ETARÍO DESCRIPCIÓN CONDUCTA CANTIDAD  
+## 75152            1                    1        1 0
+##                  0                    0        0 0</code></pre>
+<p><img src="_main_files/figure-html/unnamed-chunk-6-1.png" alt="2" width="1152" style="display: block; margin: auto;" /></p>
+<p>Clara mente se observa que no existen valores nulos o vacios en ninguna de las variables.</p>
 </div>
-</div>
-<div id="implementacion-modelo-de-jordan" class="section level2 hasAnchor" number="6.2">
-<h2><span class="header-section-number">6.2</span> Implementacion Modelo de Jordan<a href="redes-neuronales-elman-y-jordan.html#implementacion-modelo-de-jordan" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="redes-neuronales-elman-y-jordan.html#cb20-1" tabindex="-1"></a><span class="co"># Se entrena el modelo de Jordan</span></span>
-<span id="cb20-2"><a href="redes-neuronales-elman-y-jordan.html#cb20-2" tabindex="-1"></a>modelJordan <span class="ot">&lt;-</span> <span class="fu">jordan</span>(train_inputs, train_outputs, <span class="at">size =</span> <span class="dv">12</span>, <span class="at">learnFuncParams =</span> <span class="fu">c</span>(<span class="fl">0.1</span>), <span class="at">maxit =</span> <span class="dv">5000</span>, <span class="at">linOut =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
-<div id="evolucion-de-errores-jordan" class="section level3 hasAnchor" number="6.2.1">
-<h3><span class="header-section-number">6.2.1</span> - Evolucion de Errores Jordan<a href="redes-neuronales-elman-y-jordan.html#evolucion-de-errores-jordan" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="redes-neuronales-elman-y-jordan.html#cb21-1" tabindex="-1"></a><span class="fu">plotIterativeError</span>(modelJordan)</span></code></pre></div>
-<p><img src="_main_files/figure-html/unnamed-chunk-64-1.png" width="672" /></p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="redes-neuronales-elman-y-jordan.html#cb22-1" tabindex="-1"></a><span class="co"># Se realizan las predicciones con el modelo de Jordan</span></span>
-<span id="cb22-2"><a href="redes-neuronales-elman-y-jordan.html#cb22-2" tabindex="-1"></a>predictionsJordan <span class="ot">&lt;-</span> <span class="fu">predict</span>(modelJordan, test_inputs)</span>
-<span id="cb22-3"><a href="redes-neuronales-elman-y-jordan.html#cb22-3" tabindex="-1"></a></span>
-<span id="cb22-4"><a href="redes-neuronales-elman-y-jordan.html#cb22-4" tabindex="-1"></a><span class="co"># Se denormalizan las predicciones para evaluar con los datos reales</span></span>
-<span id="cb22-5"><a href="redes-neuronales-elman-y-jordan.html#cb22-5" tabindex="-1"></a>predicted_values_Jordan <span class="ot">&lt;-</span> <span class="fu">denormalize</span>(predictionsJordan, min_val, max_val)</span></code></pre></div>
-</div>
-<div id="metricas-modelo-jordan" class="section level3 hasAnchor" number="6.2.2">
-<h3><span class="header-section-number">6.2.2</span> - Metricas Modelo Jordan<a href="redes-neuronales-elman-y-jordan.html#metricas-modelo-jordan" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="redes-neuronales-elman-y-jordan.html#cb23-1" tabindex="-1"></a><span class="co"># Se estiman las métricas para el modelo de Jordan</span></span>
-<span id="cb23-2"><a href="redes-neuronales-elman-y-jordan.html#cb23-2" tabindex="-1"></a>jordan_accuracy <span class="ot">&lt;-</span> <span class="fu">compute_accuracy</span>(actual_values, predicted_values_Jordan)</span>
-<span id="cb23-3"><a href="redes-neuronales-elman-y-jordan.html#cb23-3" tabindex="-1"></a></span>
-<span id="cb23-4"><a href="redes-neuronales-elman-y-jordan.html#cb23-4" tabindex="-1"></a><span class="co"># Se combinan los resultados en una sola tabla para todos los modelos</span></span>
-<span id="cb23-5"><a href="redes-neuronales-elman-y-jordan.html#cb23-5" tabindex="-1"></a>accuracy_table_todos <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(</span>
-<span id="cb23-6"><a href="redes-neuronales-elman-y-jordan.html#cb23-6" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">Model =</span> <span class="st">&quot;Holt-Winters&quot;</span>, hw_accuracy),</span>
-<span id="cb23-7"><a href="redes-neuronales-elman-y-jordan.html#cb23-7" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">Model =</span> <span class="st">&quot;ARIMA&quot;</span>, arima_accuracy_sinTrans),</span>
-<span id="cb23-8"><a href="redes-neuronales-elman-y-jordan.html#cb23-8" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">Model =</span> <span class="st">&quot;Prophet&quot;</span>, prophet_accuracy_sinTrans),</span>
-<span id="cb23-9"><a href="redes-neuronales-elman-y-jordan.html#cb23-9" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">Model =</span> <span class="st">&quot;Elman&quot;</span>, elman_accuracy),</span>
-<span id="cb23-10"><a href="redes-neuronales-elman-y-jordan.html#cb23-10" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">Model =</span> <span class="st">&quot;Jordan&quot;</span>, jordan_accuracy)</span>
-<span id="cb23-11"><a href="redes-neuronales-elman-y-jordan.html#cb23-11" tabindex="-1"></a>)</span>
-<span id="cb23-12"><a href="redes-neuronales-elman-y-jordan.html#cb23-12" tabindex="-1"></a></span>
-<span id="cb23-13"><a href="redes-neuronales-elman-y-jordan.html#cb23-13" tabindex="-1"></a><span class="co"># Se imprime la tabla incluyendo el modelo de Elman</span></span>
-<span id="cb23-14"><a href="redes-neuronales-elman-y-jordan.html#cb23-14" tabindex="-1"></a><span class="fu">print</span>(accuracy_table_todos)</span></code></pre></div>
-<pre><code>## # A tibble: 5 × 9
-##   Model           ME  RMSE   MAE    MPE  MAPE  MASE RMSSE  ACF1
-##   &lt;chr&gt;        &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
-## 1 Holt-Winters  346.  482.  346.  56.2   56.2  2.09  1.56 0.478
-## 2 ARIMA         252.  406.  318.  44.0   49.3  1.92  1.31 0.480
-## 3 Prophet      -119.  349.  327.  -1.27  35.4  1.97  1.13 0.463
-## 4 Elman         586.  800.  689.  89.5   98.2  4.16  2.58 0.445
-## 5 Jordan        969. 1180. 1016. 137.   141.   6.12  3.81 0.418</code></pre>
-<p>De todos los modelos implementados, el que arrojó mejores resultados considerando las métricas de evaluación obtenidas para la predicción de los últimos 6 meses fue el modelo Prophet, esto considerando todas las métricas en general, pero especificamente con el RMSE que da una métrica en la escala original de los datos. </p>
-<p>De los modelos de redes neuronales el que mostró mejor comportamiento fue el modelo Elman, el cual tuvo un RMSE inferior al modelo de Jordan, pero superior al de los otros modelos. Esto indica que las redes neuronales no pudieron predecir de manera correcta la componenete de estacionalidad de la serie de tiempo.
-Como conclusión final, se considera que la escogencia del modelo para realizar predicciones en una serie de tiempo debe considerar las características propias de la serie, como son su tendencia, pero en especial su estacionalidad. En el ejercicio de escogencia se recomienda utilizar diferentes periodos de entrenamiento y evaluación, así como modificar las variables de ajsute de los modelos según las características de los componentes de la serie de tiempo”</p>
-
-</div>
+<div id="resumen-de-estadisticos" class="section level3 hasAnchor" number="2.0.5">
+<h3><span class="header-section-number">2.0.5</span> - <em>Resumen de Estadisticos</em><a href="análisis-exploratorio.html#resumen-de-estadisticos" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>A continuacion se muestra un resumen de los estadisticos basicos de nuestra variable <strong>CANTIDAD</strong>:</p>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   1.000   1.105   1.000  16.000</code></pre>
 </div>
 </div>
             </section>
@@ -309,8 +285,8 @@ Como conclusión final, se considera que la escogencia del modelo para realizar 
           </div>
         </div>
       </div>
-<a href="aplicacion-de-modelos.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-
+<a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="creacion-y-exproracion-de-serie-de-tiempo.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

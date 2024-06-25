@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>chapter6 Redes Neuronales ELMAN y JORDAN | Análisis de Series de Tiempo de Homicidios en colombia</title>
-  <meta name="description" content="chapter6 Redes Neuronales ELMAN y JORDAN | Análisis de Series de Tiempo de Homicidios en colombia" />
+  <title>chapter4 Implementacion de Transformaciones en la Serie de tiempo | Análisis de Series de Tiempo de Homicidios en colombia</title>
+  <meta name="description" content="chapter4 Implementacion de Transformaciones en la Serie de tiempo | Análisis de Series de Tiempo de Homicidios en colombia" />
   <meta name="generator" content="bookdown 0.39 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="chapter6 Redes Neuronales ELMAN y JORDAN | Análisis de Series de Tiempo de Homicidios en colombia" />
+  <meta property="og:title" content="chapter4 Implementacion de Transformaciones en la Serie de tiempo | Análisis de Series de Tiempo de Homicidios en colombia" />
   <meta property="og:type" content="book" />
   
   
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="chapter6 Redes Neuronales ELMAN y JORDAN | Análisis de Series de Tiempo de Homicidios en colombia" />
+  <meta name="twitter:title" content="chapter4 Implementacion de Transformaciones en la Serie de tiempo | Análisis de Series de Tiempo de Homicidios en colombia" />
   
   
   
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="aplicacion-de-modelos.html"/>
-
+<link rel="prev" href="creacion-y-exproracion-de-serie-de-tiempo.html"/>
+<link rel="next" href="aplicacion-de-modelos.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -229,79 +229,46 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="redes-neuronales-elman-y-jordan" class="section level1 hasAnchor" number="6">
-<h1><span class="header-section-number">chapter6</span> Redes Neuronales ELMAN y JORDAN<a href="redes-neuronales-elman-y-jordan.html#redes-neuronales-elman-y-jordan" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<div id="implementacion-modelo-elman" class="section level2 hasAnchor" number="6.1">
-<h2><span class="header-section-number">6.1</span> Implementacion Modelo Elman<a href="redes-neuronales-elman-y-jordan.html#implementacion-modelo-elman" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Se crean pares de entradas y salidas para aprendizaje supervisado, asumiendo 24 meses para predecir el siguiente mes.</p>
-<div id="entrenamiento-del-modelo" class="section level3 hasAnchor" number="6.1.1">
-<h3><span class="header-section-number">6.1.1</span> - Entrenamiento del Modelo<a href="redes-neuronales-elman-y-jordan.html#entrenamiento-del-modelo" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>Se entrena el modelo con las siguientes caracteristicas:</p>
-<ul>
-<li><strong>Tasa de Aprendizaje:</strong> 0.1</li>
-<li><strong>Número Máximo de Iteraciones:</strong> 5000</li>
-</ul>
+<div id="implementacion-de-transformaciones-en-la-serie-de-tiempo" class="section level1 hasAnchor" number="4">
+<h1><span class="header-section-number">chapter4</span> Implementacion de Transformaciones en la Serie de tiempo<a href="implementacion-de-transformaciones-en-la-serie-de-tiempo.html#implementacion-de-transformaciones-en-la-serie-de-tiempo" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>En este capitulo exploraremos diferentes tecnicas de transformacion que nos permitiran preparar nuestra serie de tiempo para aplicar los modelos requeridos para realizar las predicciones deseadas, dentro de las trnasformaciones que abordaremos estan: </p>
+<ol style="list-style-type: decimal">
+<li><p><strong>Transformacion Logaritmica</strong> </p></li>
+<li><p><strong>Diferenciacion</strong></p></li>
+</ol>
+<p>Iniciaremos evaluando cuantas diferenciaciones son necesarias para lograr estacionaridad en nuestra serie de tiempo.</p>
+<div id="diferenciación" class="section level3 hasAnchor" number="4.0.1">
+<h3><span class="header-section-number">4.0.1</span> - <em>Diferenciación</em><a href="implementacion-de-transformaciones-en-la-serie-de-tiempo.html#diferenciación" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Dado a que en los modelos de series de tiempo se requiere tener en cuenta la estacionaridad, para una mejor modelización y capacidad predictiva, se procede a obtener las diferencias necesarias para lograr el cumplimiento de este supuesto.</p>
+<p><strong>¿Cuántas diferencias se necesitan para hallar estacionariedad?</strong></p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="implementacion-de-transformaciones-en-la-serie-de-tiempo.html#cb7-1" tabindex="-1"></a>Diferencias<span class="ot">=</span><span class="fu">ndiffs</span>(Data_ts<span class="sc">$</span>homicidios)</span></code></pre></div>
+<p>Despues de realizar el procedimiento de diferenciacion se llega a la conclusion que se solo se requieren <strong>1</strong> diferencias para lograr la estacionariedad requerida para el modelamiento.</p>
 </div>
-<div id="evolucion-de-error-elman" class="section level3 hasAnchor" number="6.1.2">
-<h3><span class="header-section-number">6.1.2</span> - Evolucion de Error Elman<a href="redes-neuronales-elman-y-jordan.html#evolucion-de-error-elman" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>Se usa función plotIterativeError para ver evolución del error de la red a lo largo de las iteraciones de entrenamiento</p>
-<p><img src="_main_files/figure-html/unnamed-chunk-60-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>En el grafico se puede observar como el error no converge a cero rápidamente lo que es una indicacion de que el ajuste del modelo es debil.</p>
+<div id="transformación-logaritmica" class="section level3 hasAnchor" number="4.0.2">
+<h3><span class="header-section-number">4.0.2</span> - <em>Transformación Logaritmica</em><a href="implementacion-de-transformaciones-en-la-serie-de-tiempo.html#transformación-logaritmica" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>La transformacion logaritmica permite eliminar la tendencia de serie de tiempo, esto con el objetivo de estabilizar el comportamiento de la serie y que esta no se vea afectada por este componente durante el modelamiento y la prediccion, cabe resaltar que estas transformaciones, en muchos casos deben ser revertidas, como por ejemplo al realizar validaciones cruzadas entre modelos para poder tener valores en la misma escala.</p>
+<p><img src="_main_files/figure-html/unnamed-chunk-19-1.png" width="672" style="display: block; margin: auto;" /><img src="_main_files/figure-html/unnamed-chunk-19-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Luego de aplicar la transformacion logaritmica a la serie de tiempo, se observa como se minimizan las diferencias en la serie, presentandonos una grafica con valores mas estables, esto nos ayuda a cumplir con el supuesto de que la serie tenga una variabilidad constante.</p>
+<p>teniendo en cuenta que la serie no es estacionaria se debe continuar con la plicacion de la diferenciacion sugerida por la prueba <strong>Dicker - Fuller</strong> para lograr una serie que cumpla las condiciones para su correcto modelamiento y predicciones.</p>
 </div>
-<div id="metricas-modelo-elman" class="section level3 hasAnchor" number="6.1.3">
-<h3><span class="header-section-number">6.1.3</span> - Metricas Modelo Elman<a href="redes-neuronales-elman-y-jordan.html#metricas-modelo-elman" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<pre><code>## # A tibble: 4 × 9
-##   Model           ME  RMSE   MAE   MPE  MAPE  MASE RMSSE  ACF1
-##   &lt;chr&gt;        &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
-## 1 Holt-Winters  346.  482.  346. 56.2   56.2  2.09  1.56 0.478
-## 2 ARIMA         252.  406.  318. 44.0   49.3  1.92  1.31 0.480
-## 3 Prophet      -119.  349.  327. -1.27  35.4  1.97  1.13 0.463
-## 4 Elman         586.  800.  689. 89.5   98.2  4.16  2.58 0.445</code></pre>
+<div id="aplicación-de-diferenciación" class="section level3 hasAnchor" number="4.0.3">
+<h3><span class="header-section-number">4.0.3</span> - <em>Aplicación de Diferenciación</em><a href="implementacion-de-transformaciones-en-la-serie-de-tiempo.html#aplicación-de-diferenciación" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Luego de haber aplicado la transformacion logaritmica procederemos con la implementacion de la diferenciacion, para realizar este procedimiento nos apoyaremos en la funcion <strong>diff</strong>.</p>
+<p><img src="_main_files/figure-html/unnamed-chunk-20-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Tal y como se observa en la grafica, la diferenciacion nos ha permitido tener una serie mucho mas estable eliminando las variaciones extremas para tener datos mas uniformes. </p>
+<p><strong>NOTA:</strong> esta transformacion debera ser revertida en futuros pasos para devolver los valores de la prediccion a las escalas originales</p>
 </div>
+<div id="aplicación-de-función-acf" class="section level3 hasAnchor" number="4.0.4">
+<h3><span class="header-section-number">4.0.4</span> - <em>Aplicación de función ACF</em><a href="implementacion-de-transformaciones-en-la-serie-de-tiempo.html#aplicación-de-función-acf" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Como parte de la exploracion de la serie transformada se realiza la verificacion de las correlaciones luego de las transformaciones para comprobar la estacionaridad de la serie transformada</p>
+<p><img src="_main_files/figure-html/unnamed-chunk-21-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>El realizar la autocorrelacion nos permite identificar un comportamiento estacionario con respecto al los resagos de tiempo en la serie.</p>
 </div>
-<div id="implementacion-modelo-de-jordan" class="section level2 hasAnchor" number="6.2">
-<h2><span class="header-section-number">6.2</span> Implementacion Modelo de Jordan<a href="redes-neuronales-elman-y-jordan.html#implementacion-modelo-de-jordan" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="redes-neuronales-elman-y-jordan.html#cb20-1" tabindex="-1"></a><span class="co"># Se entrena el modelo de Jordan</span></span>
-<span id="cb20-2"><a href="redes-neuronales-elman-y-jordan.html#cb20-2" tabindex="-1"></a>modelJordan <span class="ot">&lt;-</span> <span class="fu">jordan</span>(train_inputs, train_outputs, <span class="at">size =</span> <span class="dv">12</span>, <span class="at">learnFuncParams =</span> <span class="fu">c</span>(<span class="fl">0.1</span>), <span class="at">maxit =</span> <span class="dv">5000</span>, <span class="at">linOut =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
-<div id="evolucion-de-errores-jordan" class="section level3 hasAnchor" number="6.2.1">
-<h3><span class="header-section-number">6.2.1</span> - Evolucion de Errores Jordan<a href="redes-neuronales-elman-y-jordan.html#evolucion-de-errores-jordan" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="redes-neuronales-elman-y-jordan.html#cb21-1" tabindex="-1"></a><span class="fu">plotIterativeError</span>(modelJordan)</span></code></pre></div>
-<p><img src="_main_files/figure-html/unnamed-chunk-64-1.png" width="672" /></p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="redes-neuronales-elman-y-jordan.html#cb22-1" tabindex="-1"></a><span class="co"># Se realizan las predicciones con el modelo de Jordan</span></span>
-<span id="cb22-2"><a href="redes-neuronales-elman-y-jordan.html#cb22-2" tabindex="-1"></a>predictionsJordan <span class="ot">&lt;-</span> <span class="fu">predict</span>(modelJordan, test_inputs)</span>
-<span id="cb22-3"><a href="redes-neuronales-elman-y-jordan.html#cb22-3" tabindex="-1"></a></span>
-<span id="cb22-4"><a href="redes-neuronales-elman-y-jordan.html#cb22-4" tabindex="-1"></a><span class="co"># Se denormalizan las predicciones para evaluar con los datos reales</span></span>
-<span id="cb22-5"><a href="redes-neuronales-elman-y-jordan.html#cb22-5" tabindex="-1"></a>predicted_values_Jordan <span class="ot">&lt;-</span> <span class="fu">denormalize</span>(predictionsJordan, min_val, max_val)</span></code></pre></div>
-</div>
-<div id="metricas-modelo-jordan" class="section level3 hasAnchor" number="6.2.2">
-<h3><span class="header-section-number">6.2.2</span> - Metricas Modelo Jordan<a href="redes-neuronales-elman-y-jordan.html#metricas-modelo-jordan" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="redes-neuronales-elman-y-jordan.html#cb23-1" tabindex="-1"></a><span class="co"># Se estiman las métricas para el modelo de Jordan</span></span>
-<span id="cb23-2"><a href="redes-neuronales-elman-y-jordan.html#cb23-2" tabindex="-1"></a>jordan_accuracy <span class="ot">&lt;-</span> <span class="fu">compute_accuracy</span>(actual_values, predicted_values_Jordan)</span>
-<span id="cb23-3"><a href="redes-neuronales-elman-y-jordan.html#cb23-3" tabindex="-1"></a></span>
-<span id="cb23-4"><a href="redes-neuronales-elman-y-jordan.html#cb23-4" tabindex="-1"></a><span class="co"># Se combinan los resultados en una sola tabla para todos los modelos</span></span>
-<span id="cb23-5"><a href="redes-neuronales-elman-y-jordan.html#cb23-5" tabindex="-1"></a>accuracy_table_todos <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(</span>
-<span id="cb23-6"><a href="redes-neuronales-elman-y-jordan.html#cb23-6" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">Model =</span> <span class="st">&quot;Holt-Winters&quot;</span>, hw_accuracy),</span>
-<span id="cb23-7"><a href="redes-neuronales-elman-y-jordan.html#cb23-7" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">Model =</span> <span class="st">&quot;ARIMA&quot;</span>, arima_accuracy_sinTrans),</span>
-<span id="cb23-8"><a href="redes-neuronales-elman-y-jordan.html#cb23-8" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">Model =</span> <span class="st">&quot;Prophet&quot;</span>, prophet_accuracy_sinTrans),</span>
-<span id="cb23-9"><a href="redes-neuronales-elman-y-jordan.html#cb23-9" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">Model =</span> <span class="st">&quot;Elman&quot;</span>, elman_accuracy),</span>
-<span id="cb23-10"><a href="redes-neuronales-elman-y-jordan.html#cb23-10" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">Model =</span> <span class="st">&quot;Jordan&quot;</span>, jordan_accuracy)</span>
-<span id="cb23-11"><a href="redes-neuronales-elman-y-jordan.html#cb23-11" tabindex="-1"></a>)</span>
-<span id="cb23-12"><a href="redes-neuronales-elman-y-jordan.html#cb23-12" tabindex="-1"></a></span>
-<span id="cb23-13"><a href="redes-neuronales-elman-y-jordan.html#cb23-13" tabindex="-1"></a><span class="co"># Se imprime la tabla incluyendo el modelo de Elman</span></span>
-<span id="cb23-14"><a href="redes-neuronales-elman-y-jordan.html#cb23-14" tabindex="-1"></a><span class="fu">print</span>(accuracy_table_todos)</span></code></pre></div>
-<pre><code>## # A tibble: 5 × 9
-##   Model           ME  RMSE   MAE    MPE  MAPE  MASE RMSSE  ACF1
-##   &lt;chr&gt;        &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
-## 1 Holt-Winters  346.  482.  346.  56.2   56.2  2.09  1.56 0.478
-## 2 ARIMA         252.  406.  318.  44.0   49.3  1.92  1.31 0.480
-## 3 Prophet      -119.  349.  327.  -1.27  35.4  1.97  1.13 0.463
-## 4 Elman         586.  800.  689.  89.5   98.2  4.16  2.58 0.445
-## 5 Jordan        969. 1180. 1016. 137.   141.   6.12  3.81 0.418</code></pre>
-<p>De todos los modelos implementados, el que arrojó mejores resultados considerando las métricas de evaluación obtenidas para la predicción de los últimos 6 meses fue el modelo Prophet, esto considerando todas las métricas en general, pero especificamente con el RMSE que da una métrica en la escala original de los datos. </p>
-<p>De los modelos de redes neuronales el que mostró mejor comportamiento fue el modelo Elman, el cual tuvo un RMSE inferior al modelo de Jordan, pero superior al de los otros modelos. Esto indica que las redes neuronales no pudieron predecir de manera correcta la componenete de estacionalidad de la serie de tiempo.
-Como conclusión final, se considera que la escogencia del modelo para realizar predicciones en una serie de tiempo debe considerar las características propias de la serie, como son su tendencia, pero en especial su estacionalidad. En el ejercicio de escogencia se recomienda utilizar diferentes periodos de entrenamiento y evaluación, así como modificar las variables de ajsute de los modelos según las características de los componentes de la serie de tiempo”</p>
-
-</div>
+<div id="aplicación-de-función-pacf" class="section level3 hasAnchor" number="4.0.5">
+<h3><span class="header-section-number">4.0.5</span> - <em>Aplicación de función PACF</em><a href="implementacion-de-transformaciones-en-la-serie-de-tiempo.html#aplicación-de-función-pacf" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>al igual que el analisis de autocorrelacion <strong>ACF</strong> el analisis de autocorrelacion parcial <strong>PACF</strong> nos permite evaluar la autoregresividad de la serie de tiempo.</p>
+<p><img src="_main_files/figure-html/unnamed-chunk-22-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Al identificar la estructura autorregresiva en la serie, se tiene que, se necesitan 3 rezagos para predecir el valor actual de la serie.</p>
 </div>
 </div>
             </section>
@@ -309,8 +276,8 @@ Como conclusión final, se considera que la escogencia del modelo para realizar 
           </div>
         </div>
       </div>
-<a href="aplicacion-de-modelos.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-
+<a href="creacion-y-exproracion-de-serie-de-tiempo.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="aplicacion-de-modelos.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
