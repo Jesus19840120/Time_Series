@@ -97,7 +97,7 @@ Clara mente se observa que no existen valos nulos o vacios en ninguna de las var
 
 ### *Identificación de registros vacíos con MICE*
 Se realiza la verificacion de valores nulos o vacios obteniendo los siguientes resultados:
-```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center', fig.alt= 2, fig.width=12}
+```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center', fig.alt= 2, fig.width=12, fig.show='hold'}
 par(mfrow=c(3,1))
 md.pattern(data, rotate.names=TRUE)
 ```
