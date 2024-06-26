@@ -18,6 +18,9 @@ knitr::opts_chunk$set(echo = TRUE)
 knitr::include_graphics("C:/Users/jrgal/OneDrive/Escritorio/Maestria/Series de Tiempo/Actividad 1/Imagen Analisis Homicidios.jpg")
 
 ```
+![]("Imagen Analisis Homicidios.jpg")
+
+
 
 # **Chapter 1 Descripción**
 <div style= "text-align:justify">
@@ -101,7 +104,6 @@ Se realiza la verificacion de valores nulos o vacios obteniendo los siguientes r
 par(mfrow=c(3,1))
 md.pattern(data, rotate.names=TRUE)
 
-knitr::include_graphics("unnamed-chunk-6-1.png")
 ```
 ![]("unnamed-chunk-6-1.png")
 
