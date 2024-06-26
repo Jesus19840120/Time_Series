@@ -249,7 +249,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="evolucion-de-error-elman" class="section level3 hasAnchor" number="6.1.2">
 <h3><span class="header-section-number">6.1.2</span> - Evolucion de Error Elman<a href="redes-neuronales-elman-y-jordan.html#evolucion-de-error-elman" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Se usa función plotIterativeError para ver evolución del error de la red a lo largo de las iteraciones de entrenamiento</p>
-<p><img src="_main_files/figure-html/unnamed-chunk-60-1.png" width="672" style="display: block; margin: auto;" />
+<p><img src="_main_files/figure-html/unnamed-chunk-61-1.png" width="672" style="display: block; margin: auto;" />
 <img src="unnamed-chunk-60-1.png" /></p>
 <p>En el grafico se puede observar como el error no converge a cero rápidamente lo que es una indicacion de que el ajuste del modelo es debil.</p>
 </div>
@@ -261,7 +261,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## 1 Holt-Winters  346.  482.  346.  56.2   56.2  2.09  1.56 0.478
 ## 2 ARIMA         252.  406.  318.  44.0   49.3  1.92  1.31 0.480
 ## 3 Prophet      -119.  349.  327.  -1.27  35.4  1.97  1.13 0.463
-## 4 Elman         927. 1503. 1268. 139.   168.   7.65  4.85 0.228</code></pre>
+## 4 Elman         754. 1351. 1204. 119.   157.   7.26  4.36 0.271</code></pre>
 </div>
 </div>
 <div id="implementacion-modelo-de-jordan" class="section level2 hasAnchor" number="6.2">
@@ -271,7 +271,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="evolucion-de-errores-jordan" class="section level3 hasAnchor" number="6.2.1">
 <h3><span class="header-section-number">6.2.1</span> - Evolucion de Errores Jordan<a href="redes-neuronales-elman-y-jordan.html#evolucion-de-errores-jordan" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="redes-neuronales-elman-y-jordan.html#cb21-1" tabindex="-1"></a><span class="fu">plotIterativeError</span>(modelJordan)</span></code></pre></div>
-<p><img src="_main_files/figure-html/unnamed-chunk-64-1.png" width="672" />
+<p><img src="_main_files/figure-html/unnamed-chunk-65-1.png" width="672" />
 <img src="unnamed-chunk-64-1.png" /></p>
 <div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="redes-neuronales-elman-y-jordan.html#cb22-1" tabindex="-1"></a><span class="co"># Se realizan las predicciones con el modelo de Jordan</span></span>
 <span id="cb22-2"><a href="redes-neuronales-elman-y-jordan.html#cb22-2" tabindex="-1"></a>predictionsJordan <span class="ot">&lt;-</span> <span class="fu">predict</span>(modelJordan, test_inputs)</span>
@@ -301,8 +301,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## 1 Holt-Winters  346.  482.  346.  56.2   56.2  2.09  1.56 0.478
 ## 2 ARIMA         252.  406.  318.  44.0   49.3  1.92  1.31 0.480
 ## 3 Prophet      -119.  349.  327.  -1.27  35.4  1.97  1.13 0.463
-## 4 Elman         927. 1503. 1268. 139.   168.   7.65  4.85 0.228
-## 5 Jordan        998. 1235. 1101. 143.   152.   6.64  3.98 0.446</code></pre>
+## 4 Elman         754. 1351. 1204. 119.   157.   7.26  4.36 0.271
+## 5 Jordan       1201. 1593. 1373. 180.   194.   8.28  5.14 0.480</code></pre>
 <p>De todos los modelos implementados, el que arrojó mejores resultados considerando las métricas de evaluación obtenidas para la predicción de los últimos 6 meses fue el modelo Prophet, esto considerando todas las métricas en general, pero especificamente con el RMSE que da una métrica en la escala original de los datos. </p>
 <p>De los modelos de redes neuronales el que mostró mejor comportamiento fue el modelo Elman, el cual tuvo un RMSE inferior al modelo de Jordan, pero superior al de los otros modelos. Esto indica que las redes neuronales no pudieron predecir de manera correcta la componenete de estacionalidad de la serie de tiempo.
 Como conclusión final, se considera que la escogencia del modelo para realizar predicciones en una serie de tiempo debe considerar las características propias de la serie, como son su tendencia, pero en especial su estacionalidad. En el ejercicio de escogencia se recomienda utilizar diferentes periodos de entrenamiento y evaluación, así como modificar las variables de ajsute de los modelos según las características de los componentes de la serie de tiempo”</p>
