@@ -100,8 +100,9 @@ Se realiza la verificacion de valores nulos o vacios obteniendo los siguientes r
 ```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center', fig.alt= 2, fig.width=12, fig.show='hold'}
 par(mfrow=c(3,1))
 md.pattern(data, rotate.names=TRUE)
+
+knitr::include_graphics("docs/_main_files/figure-html/unnamed-chunk-6-1.png")
 ```
-![](_main_files\figure-html\unnamed-chunk-6-1.png)
 
 
 Clara mente se observa que no existen valores nulos o vacios en ninguna de las variables.
