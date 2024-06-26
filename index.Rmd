@@ -105,7 +105,7 @@ par(mfrow=c(3,1))
 md.pattern(data, rotate.names=TRUE)
 
 ```
-![]("unnamed-chunk-6-1.png")
+![]("unnamed-chunk-7-1.png")
 
 Clara mente se observa que no existen valores nulos o vacios en ninguna de las variables.
 
@@ -182,7 +182,7 @@ Se realiza la evaluacion de la serie agrupada por meses para determinar patrones
 boxplot(df_ts ~ cycle(df_ts), xlab = "Meses", ylab = "Homicidios",
         main = "Boxplot de los homicidios por meses")
 ```
-![](unnamed-chunk-10-1.png)
+![](unnamed-chunk-11-1.png)
 
 
 
@@ -197,7 +197,7 @@ En 7 meses se observan unos valores atipicos que superan los 1000 homicidios y u
 lag.plot(df_ts, 12, do.lines = F,main = "Grafica de Rezagos")
 
 ```
-![](unnamed-chunk-11-1.png)
+![](unnamed-chunk-12-1.png)
 
 
 
@@ -230,7 +230,7 @@ theme(legend.position = "top") +
                      labels = c("EMA" = "Media Movil Exponencial", "SMA" = "Media Movil Simple"))+
   scale_x_date(date_breaks = "1 year", date_labels = "%Y")
 ```
-![](unnamed-chunk-13-1.png)
+![](unnamed-chunk-14-1.png)
 
 
 Durante los últimos 13 años, los homicidios en Colombia han experimentado un aumento gradual.
@@ -258,7 +258,7 @@ ggplot(Data_ts, aes(x = fechas, y = homicidios))+
                      labels = c("EMA" = "Media Movil Exponencial", "SMA" = "Media Movil Simple"))+
   scale_x_date(date_breaks = "1 year", date_labels = "%Y")
 ```
-![](unnamed-chunk-14-1.png)
+![](unnamed-chunk-15-1.png)
 
 
 En congruencia con las medias móviles, se observa que la cantidad de homicidios no supera los 375 casos mensuales mensuales antes del 2020, sin embargo en el los periodos posteriores como en el 2023 se observa que se alcanzan valores tope hasta de 1000 muertes mesuales en el país a causa de los homicidios.
@@ -279,7 +279,7 @@ autoplot(fit_df, color = "aquamarine3") +
   )
 
 ```
-![](unnamed-chunk-15-1.png)
+![](unnamed-chunk-16-1.png)
 
 
 En el grafico se identifica: \n
@@ -314,7 +314,7 @@ ggseasonplot(Data_ts$homicidios)+
   theme_minimal()+
   labs(x = "Mes", title = "Estacionalidad de los homicidios por mes")
 ```
-![](unnamed-chunk-17-1.png)
+![](unnamed-chunk-18-1.png)
 
 
 
@@ -359,8 +359,8 @@ plot(Serie_Log$homicidios, xlab= "Anios", ylab= "Homicidios", main= "Serie Despu
 
 
 ```
-![](unnamed-chunk-19-1.png)
-![](unnamed-chunk-19-2.png)
+![](unnamed-chunk-20-1.png)
+![](unnamed-chunk-20-2.png)
 
 
 
@@ -378,7 +378,7 @@ a_estacio = diff(x$homicidios)
 plot(a_estacio, xlab = "Anios", ylab = " ",
      main = "TS estacionariedad en los homicidios de Colombia \n2010 - 2024")
 ```
-![](unnamed-chunk-20-1.png)
+![](unnamed-chunk-21-1.png)
 
 
 
@@ -394,7 +394,7 @@ Como parte de la exploracion de la serie transformada se realiza la verificacion
 library(forecast)
 acf(a_estacio, main = "Autocorrelacion")
 ```
-![](unnamed-chunk-21-1.png)
+![](unnamed-chunk-22-1.png)
 
 
 
@@ -407,7 +407,7 @@ al igual que el analisis de autocorrelacion **ACF** el analisis de autocorrelaci
 ```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
 pacf(a_estacio, main = "Autocorrelacion parcial")
 ```
-![](unnamed-chunk-22-1.png)
+![](unnamed-chunk-23-1.png)
 
 
 
@@ -449,7 +449,7 @@ plot(Modelo, main = "Predicciones con modelo Holt-Winters", ylab = "Cantidad de 
 legend("bottomright", legend = c("Data", "Prediction"), col = c("black", "red"), lty = 1)
 
 ```
-![](unnamed-chunk-23-1.png)
+![](unnamed-chunk-24-1.png)
 
 
 
@@ -483,7 +483,7 @@ Modelo2 <- HoltWinters(Data_ts$homicidios, seasonal = "multiplicative", alpha = 
 plot(Modelo2, main = "Predicciones con modelo Holt-Winters (Uso de parametros: Nivel)")
 legend("bottomright", legend = c("Data", "Prediction"), col = c("black", "red"), lty = 1)
 ```
-![](unnamed-chunk-25-1.png)
+![](unnamed-chunk-26-1.png)
 
 
 
@@ -496,7 +496,7 @@ plot(Modelo3, main = "Predicciones con modelo Holt-Winters \n (Uso de parametros
 legend("topleft", legend = c("Data", "Prediction"), col = c("black", "red"), lty = 1)
 
 ```
-![](unnamed-chunk-26-1.png)
+![](unnamed-chunk-27-1.png)
 
 
 
@@ -509,7 +509,7 @@ plot(Modelo4, main = "Predicciones con modelo Holt-Winters (Uso de parametros: E
 legend("topleft", legend = c("Data", "Prediction"), col = c("black", "red"), lty = 1)
 
 ```
-![](unnamed-chunk-27-1.png)
+![](unnamed-chunk-28-1.png)
 
 
 
@@ -518,8 +518,8 @@ plot(fitted(Modelo), main = "Holt-winters Ajuste", xlab = "", ylab = "")
 
 plot(fitted(Modelo4), main = "Holt-winters Ajuste", xlab = "", ylab = "")
 ```
-![](unnamed-chunk-28-1.png)
-![](unnamed-chunk-28-2.png)
+![](unnamed-chunk-29-1.png)
+![](unnamed-chunk-29-2.png)
 
 
 
@@ -532,7 +532,7 @@ prediction <- predict(Modelo, 11, prediction.interval = TRUE, level = 0.95)
 plot(forecast(Modelo, h = 11, level = c(80,95)), main = "Predicciones en Colombia bajo el modelo Holt-Winters")
 
 ```
-![](unnamed-chunk-29-1.png)
+![](unnamed-chunk-30-1.png)
 
 
 
@@ -545,7 +545,7 @@ Modelo_evaluation <- forecast(Modelo, h = 11, level=c(80,95))
 
 acf(Modelo_evaluation$residuals, lag.max=30, na.action=na.pass)
 ```
-![](unnamed-chunk-30-1.png)
+![](unnamed-chunk-31-1.png)
 
 
 Realizando una autocorrelación a través de la función 'acf', se establecen unos rezagos de 30, haciendo alusión a la misma obsevación en el mes anterior, y dejando denotado no tener en cuenta los NA's en la operación.
@@ -567,7 +567,7 @@ Dado que **p-value** es mayor a **0.05** se acepta la hipotesis nula advertida e
 hist(Modelo_evaluation$residuals, main = "Residuos del modelo Holt-Winters")
 
 ```
-![](unnamed-chunk-32-1.png)
+![](unnamed-chunk-33-1.png)
 
 
 
@@ -610,7 +610,7 @@ predicciones <- forecast(m_arima, h = 11)
 # Visualizar las predicciones
 plot(predicciones, main = "Predicciones con el modelo ARIMA")
 ```
-![](unnamed-chunk-35-1.png)
+![](unnamed-chunk-36-1.png)
 
 
 
@@ -621,7 +621,7 @@ qqline(residuales)
 shapiro.test(residuales)
 
 ```
-![](unnamed-chunk-36-1.png)
+![](unnamed-chunk-37-1.png)
 
 
 
@@ -685,7 +685,7 @@ forecast_prophet <- predict(modelo_prophet, futuro_prophet)
 # Visualizar los resultados
 plot(modelo_prophet, forecast_prophet)
 ```
-![](unnamed-chunk-42-1.png)
+![](unnamed-chunk-43-1.png)
 
 
 - Los puntos negros representan medidas reales de la serie de tiempo \n
@@ -704,7 +704,7 @@ prophet_plot_components(modelo_prophet, forecast_prophet)
 
 
 ```
-![](unnamed-chunk-43-1.png)
+![](unnamed-chunk-44-1.png)
 
 
 
@@ -743,7 +743,7 @@ nuevoMod_holt_winters <- HoltWinters(nueva_ts, seasonal = "additive")
 plot(nuevoMod_holt_winters, main = "Nuevo modelo Holt-Winters")
 
 ```
-![](unnamed-chunk-45-1.png)
+![](unnamed-chunk-46-1.png)
 
 
 
@@ -1046,7 +1046,7 @@ Se usa  función plotIterativeError para ver evolución del error de la red a lo
 plotIterativeError(model)
 
 ```
-![](unnamed-chunk-60-1.png)
+![](unnamed-chunk-61-1.png)
 
 
 En el grafico se puede observar como el error no converge a cero rápidamente lo que es una indicacion de que el ajuste del modelo es debil.
@@ -1099,7 +1099,7 @@ modelJordan <- jordan(train_inputs, train_outputs, size = 12, learnFuncParams = 
 plotIterativeError(modelJordan)
 
 ```
-![](unnamed-chunk-64-1.png)
+![](unnamed-chunk-65-1.png)
 
 
 ```{r}
