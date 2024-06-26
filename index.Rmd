@@ -14,8 +14,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 
-```{r, echo=FALSE, out.width="36%",out.height=="20%", fig.align = "center",warning=FALSE}
-knitr::include_graphics("C:/Users/jrgal/OneDrive/Escritorio/Maestria/Series de Tiempo/Actividad 1/Imagen Analisis Homicidios.jpg")
+```{r, echo=FALSE, fig.align = "center",warning=FALSE}
+#knitr::include_graphics("C:/Users/jrgal/OneDrive/Escritorio/Maestria/Series de Tiempo/Actividad 1/Imagen Analisis Homicidios.jpg")
 
 ```
 ![]("Imagen Analisis Homicidios.jpg")
@@ -100,7 +100,7 @@ Clara mente se observa que no existen valos nulos o vacios en ninguna de las var
 
 ### *Identificación de registros vacíos con MICE*
 Se realiza la verificacion de valores nulos o vacios obteniendo los siguientes resultados:
-```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
+```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center', fig.show='hide'}
 par(mfrow=c(3,1))
 md.pattern(data, rotate.names=TRUE)
 
