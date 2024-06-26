@@ -100,7 +100,7 @@ Clara mente se observa que no existen valos nulos o vacios en ninguna de las var
 
 ### *Identificación de registros vacíos con MICE*
 Se realiza la verificacion de valores nulos o vacios obteniendo los siguientes resultados:
-```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center', fig.alt= 2, fig.width=12, fig.show='hold'}
+```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
 par(mfrow=c(3,1))
 md.pattern(data, rotate.names=TRUE)
 
@@ -178,7 +178,7 @@ En el grafico anterior se observa que la seria presenta una leve tendencia de **
 
 Se realiza la evaluacion de la serie agrupada por meses para determinar patrones de comportamiento durante cada uno de ellos, este analisis permite evidenciar estacionalidades que no son tan claras viendo la serie de tiempo cruda.
 
-```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
+```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center', fig.show='hide'}
 boxplot(df_ts ~ cycle(df_ts), xlab = "Meses", ylab = "Homicidios",
         main = "Boxplot de los homicidios por meses")
 ```
