@@ -101,7 +101,6 @@ Se realiza la verificacion de valores nulos o vacios obteniendo los siguientes r
 par(mfrow=c(3,1))
 md.pattern(data, rotate.names=TRUE)
 
-knitr::include_graphics("unnamed-chunk-6-1.png")
 ```
 
 
