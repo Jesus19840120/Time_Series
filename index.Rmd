@@ -18,11 +18,11 @@ knitr::opts_chunk$set(echo = TRUE)
 #knitr::include_graphics("C:/Users/jrgal/OneDrive/Escritorio/Maestria/Series de Tiempo/Actividad 1/Imagen Analisis Homicidios.jpg")
 
 ```
-![]("Imagen Analisis Homicidios.jpg")
-
-
 
 # **Chapter 1 Descripción**
+
+![]("Imagen Analisis Homicidios.png")
+
 <div style= "text-align:justify">
 La dinámica y evolución de los homicidios en Colombia constituye un fenómeno de gran relevancia que merece ser minuciosamente analizado y comprendido. Pues, el entendimiento de sus tendencias, patrones y factores resulta esencial para abordar la complejidad de este delito en el país. En este sentido, este análisis podría arrojar luz a aspectos cruciales como la variación estacional de los homicidios, los potenciales impactos de factores socioeconómicos y demográficos y/o la influencia de las políticas de seguridad implementadas en el territorio nacional.
 <div/>
@@ -100,12 +100,12 @@ Clara mente se observa que no existen valos nulos o vacios en ninguna de las var
 
 ### *Identificación de registros vacíos con MICE*
 Se realiza la verificacion de valores nulos o vacios obteniendo los siguientes resultados:
-```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
-par(mfrow=c(3,1))
+```{r echo=FALSE,message=FALSE,warning=FALSE, fig.align='center', fig.show='hide'}
+par(mfrow=c(2,2))
 md.pattern(data, rotate.names=TRUE)
 
 ```
-![]("unnamed-chunk-7-1.png")
+![](unnamed-chunk-7-1.png)
 
 Clara mente se observa que no existen valores nulos o vacios en ninguna de las variables.
 
@@ -1088,21 +1088,21 @@ print(accuracy_table_sinTrans)
 
 ## Implementacion Modelo de Jordan  
 
-```{r}
+```{r echo=FALSE}
 # Se entrena el modelo de Jordan
 modelJordan <- jordan(train_inputs, train_outputs, size = 12, learnFuncParams = c(0.1), maxit = 5000, linOut = TRUE)
 ```
 
 ### - Evolucion de Errores Jordan
 
-```{r, fig.show='hide'}
+```{r echo=FALSE, fig.show='hide'}
 plotIterativeError(modelJordan)
 
 ```
 ![](unnamed-chunk-65-1.png)
 
 
-```{r}
+```{r echo=FALSE}
 # Se realizan las predicciones con el modelo de Jordan
 predictionsJordan <- predict(modelJordan, test_inputs)
 
@@ -1113,7 +1113,7 @@ predicted_values_Jordan <- denormalize(predictionsJordan, min_val, max_val)
 
 ### - Metricas Modelo Jordan
 
-```{r}
+```{r echo=FALSE}
 # Se estiman las métricas para el modelo de Jordan
 jordan_accuracy <- compute_accuracy(actual_values, predicted_values_Jordan)
 
