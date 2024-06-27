@@ -14,16 +14,13 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 
-```{r, echo=FALSE, fig.align = "center",warning=FALSE}
-#knitr::include_graphics("C:/Users/jrgal/OneDrive/Escritorio/Maestria/Series de Tiempo/Actividad 1/Imagen Analisis Homicidios.jpg")
-
-```
-
 # **Chapter 1 Descripción**
 
-<div style= "fig-align:center">
+```{r, echo=FALSE, fig.align = "center",warning=FALSE, fig.show='hide'}
+knitr::include_graphics("C:/Users/jrgal/OneDrive/Escritorio/Maestria/Series de Tiempo/Actividad 1/Imagen Analisis Homicidios.jpg")
+
+```
 ![](unnamed-chunk-2-1.png)
-<div/>
 
 
 <div style= "text-align:justify">
