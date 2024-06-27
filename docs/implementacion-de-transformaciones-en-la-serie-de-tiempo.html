@@ -251,8 +251,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="transformación-logaritmica" class="section level3 hasAnchor" number="4.0.2">
 <h3><span class="header-section-number">4.0.2</span> - <em>Transformación Logaritmica</em><a href="implementacion-de-transformaciones-en-la-serie-de-tiempo.html#transformación-logaritmica" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>La transformacion logaritmica permite eliminar la tendencia de serie de tiempo, esto con el objetivo de estabilizar el comportamiento de la serie y que esta no se vea afectada por este componente durante el modelamiento y la prediccion, cabe resaltar que estas transformaciones, en muchos casos deben ser revertidas, como por ejemplo al realizar validaciones cruzadas entre modelos para poder tener valores en la misma escala.</p>
-<p><img src="_main_files/figure-html/unnamed-chunk-20-1.png" width="672" style="display: block; margin: auto;" /><img src="_main_files/figure-html/unnamed-chunk-20-2.png" width="672" style="display: block; margin: auto;" />
-<img src="unnamed-chunk-20-1.png" />
+<p><img src="unnamed-chunk-20-1.png" />
 <img src="unnamed-chunk-20-2.png" /></p>
 <p>Luego de aplicar la transformacion logaritmica a la serie de tiempo, se observa como se minimizan las diferencias en la serie, presentandonos una grafica con valores mas estables, esto nos ayuda a cumplir con el supuesto de que la serie tenga una variabilidad constante.</p>
 <p>teniendo en cuenta que la serie no es estacionaria se debe continuar con la plicacion de la diferenciacion sugerida por la prueba <strong>Dicker - Fuller</strong> para lograr una serie que cumpla las condiciones para su correcto modelamiento y predicciones.</p>
@@ -260,23 +259,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="aplicación-de-diferenciación" class="section level3 hasAnchor" number="4.0.3">
 <h3><span class="header-section-number">4.0.3</span> - <em>Aplicación de Diferenciación</em><a href="implementacion-de-transformaciones-en-la-serie-de-tiempo.html#aplicación-de-diferenciación" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Luego de haber aplicado la transformacion logaritmica procederemos con la implementacion de la diferenciacion, para realizar este procedimiento nos apoyaremos en la funcion <strong>diff</strong>.</p>
-<p><img src="_main_files/figure-html/unnamed-chunk-21-1.png" width="672" style="display: block; margin: auto;" />
-<img src="unnamed-chunk-21-1.png" /></p>
+<p><img src="unnamed-chunk-21-1.png" /></p>
 <p>Tal y como se observa en la grafica, la diferenciacion nos ha permitido tener una serie mucho mas estable eliminando las variaciones extremas para tener datos mas uniformes. </p>
 <p><strong>NOTA:</strong> esta transformacion debera ser revertida en futuros pasos para devolver los valores de la prediccion a las escalas originales</p>
 </div>
 <div id="aplicación-de-función-acf" class="section level3 hasAnchor" number="4.0.4">
 <h3><span class="header-section-number">4.0.4</span> - <em>Aplicación de función ACF</em><a href="implementacion-de-transformaciones-en-la-serie-de-tiempo.html#aplicación-de-función-acf" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Como parte de la exploracion de la serie transformada se realiza la verificacion de las correlaciones luego de las transformaciones para comprobar la estacionaridad de la serie transformada</p>
-<p><img src="_main_files/figure-html/unnamed-chunk-22-1.png" width="672" style="display: block; margin: auto;" />
-<img src="unnamed-chunk-22-1.png" /></p>
+<p><img src="unnamed-chunk-22-1.png" /></p>
 <p>El realizar la autocorrelacion nos permite identificar un comportamiento estacionario con respecto al los resagos de tiempo en la serie.</p>
 </div>
 <div id="aplicación-de-función-pacf" class="section level3 hasAnchor" number="4.0.5">
 <h3><span class="header-section-number">4.0.5</span> - <em>Aplicación de función PACF</em><a href="implementacion-de-transformaciones-en-la-serie-de-tiempo.html#aplicación-de-función-pacf" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>al igual que el analisis de autocorrelacion <strong>ACF</strong> el analisis de autocorrelacion parcial <strong>PACF</strong> nos permite evaluar la autoregresividad de la serie de tiempo.</p>
-<p><img src="_main_files/figure-html/unnamed-chunk-23-1.png" width="672" style="display: block; margin: auto;" />
-<img src="unnamed-chunk-23-1.png" /></p>
+<p><img src="unnamed-chunk-23-1.png" /></p>
 <p>Al identificar la estructura autorregresiva en la serie, se tiene que, se necesitan 3 rezagos para predecir el valor actual de la serie.</p>
 </div>
 </div>
