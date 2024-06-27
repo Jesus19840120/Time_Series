@@ -21,7 +21,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # **Chapter 1 Descripción**
 
-![](Imagen Analisis Homicidios.png)
+![](unnamed-chunk-2-1.png)
 
 <div style= "text-align:justify">
 La dinámica y evolución de los homicidios en Colombia constituye un fenómeno de gran relevancia que merece ser minuciosamente analizado y comprendido. Pues, el entendimiento de sus tendencias, patrones y factores resulta esencial para abordar la complejidad de este delito en el país. En este sentido, este análisis podría arrojar luz a aspectos cruciales como la variación estacional de los homicidios, los potenciales impactos de factores socioeconómicos y demográficos y/o la influencia de las políticas de seguridad implementadas en el territorio nacional.
